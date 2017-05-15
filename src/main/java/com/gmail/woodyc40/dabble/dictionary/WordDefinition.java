@@ -13,16 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gmail.woodyc40.dabble.brain;
+package com.gmail.woodyc40.dabble.dictionary;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+@AllArgsConstructor
 public class WordDefinition {
-    @Getter private final String partOfSpeech;
     @Getter private final String definition;
-
-    public WordDefinition(String def) {
-        this.definition = def;
-        this.partOfSpeech = null;
-    }
+    @Getter private final PartOfSpeech partOfSpeech;
 }

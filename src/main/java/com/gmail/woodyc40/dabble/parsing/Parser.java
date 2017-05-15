@@ -16,7 +16,7 @@
 package com.gmail.woodyc40.dabble.parsing;
 
 import com.gmail.woodyc40.dabble.brain.Brain;
-import com.gmail.woodyc40.dabble.brain.WordDefinition;
+import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
 import com.gmail.woodyc40.dabble.lexing.Sentence;
 
 public class Parser {

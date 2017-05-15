@@ -15,6 +15,7 @@
  */
 package com.gmail.woodyc40.dabble.brain;
 
+import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
 import lombok.Getter;
 
 public final class Brain {

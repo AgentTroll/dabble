@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gmail.woodyc40.dabble.brain;
+package com.gmail.woodyc40.dabble.dictionary;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,6 +26,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static com.gmail.woodyc40.dabble.util.UtilityMethods.p;
 import static com.gmail.woodyc40.dabble.util.UtilityMethods.pl;
@@ -76,23 +77,24 @@ public final class OxfordDictionary {
         // most of it is, except for the special symbols
         // which are UTF-16 (? what's more, there are also
         // some 3-byte spechars)
+        word = word.toLowerCase(); // canonical casing
         int depth = 0;
         List<WordDefinition> aggregateList = new ArrayList<>(1);
 
         try {
             long min = 0L;
-            long max = OxfordDictionary.dictionary.length();
+            long max = dictionary.length();
             while (true) {
                 char curItr = word.charAt(depth);
                 long mid = (min + max) / 2L;
-                OxfordDictionary.dictionary.seek(mid);
+                dictionary.seek(mid);
 
                 // Go to the beginning of the "mid" line
-                mid = backtrack(mid);
+                backtrack(mid);
 
-                String line = dictionary.readLine();
+                String line = readLine();
                 String[] split = line.split("  ");
-                String dictWord = split[0];
+                String dictWord = split[0].toLowerCase();
 
                 // If not narrowed down enough, decrement
                 // the depth and try again
@@ -114,7 +116,6 @@ public final class OxfordDictionary {
                     min = dictionary.getFilePointer();
                 } else {
                     if (tryAggregate(word, dictWord, split[1], aggregateList)) {
-                        pl("Aggregated #" + dictWord);
                         return aggregateList;
                     }
 
@@ -156,7 +157,7 @@ public final class OxfordDictionary {
             dictionary.seek(idx);
             idx = backtrack(idx);
             while (true) {
-                dictWord = dictionary.readLine();
+                dictWord = readLine();
                 String[] split = dictWord.split("  ");
                 dictWord = split[0];
                 lc = dictWord.charAt(dictWord.length() - 1);
@@ -165,8 +166,6 @@ public final class OxfordDictionary {
                 // if there are
                 if (lc > '0' && lc < '9') {
                     dictWord = dictWord.replace(lc, ' ').trim();
-                } else {
-                    break;
                 }
 
                 if (word.equalsIgnoreCase(dictWord)) {
@@ -179,17 +178,15 @@ public final class OxfordDictionary {
                 idx = backtrack(idx - 3);
             }
 
-            // Look for occurrances after
+            // Look for occurrences after
             dictionary.seek(start + 1);
             while (true) {
-                dictWord = dictionary.readLine();
+                dictWord = readLine();
                 String[] split = dictWord.split("  ");
                 dictWord = split[0];
                 lc = dictWord.charAt(dictWord.length() - 1);
                 if (lc > '0' && lc < '9') {
                     dictWord = dictWord.replace(lc, ' ').trim();
-                } else {
-                    break;
                 }
 
                 if (word.equalsIgnoreCase(dictWord)) {
@@ -208,12 +205,71 @@ public final class OxfordDictionary {
     }
 
     private static void compose(String line, List<WordDefinition> aggregate) {
-        aggregate.add(new WordDefinition(line)); // TODO
+        // Format:
+        // (—) - Presence indicates change in POS
+        // POS - Part of speech
+        // (#) - Presense indicates multiple definitions
+        // (A) - Presence indicates multiple definitions
+        // Definition
+        String[] split = line.split(Pattern.quote(". "));
+
+        StringBuilder def = null;
+        PartOfSpeech pos = null;
+
+        char prevLetter = 0;
+        char prevNumber = 0;
+
+        for (int i = 0; i < split.length; i++) {
+            String cur = split[i];
+            char c0 = cur.charAt(0);
+
+            if (c0 == '—') {
+                if (def != null) {
+                    aggregate.add(new WordDefinition(def.toString(), pos));
+                }
+
+                cur = cur.replace('—', ' ').trim();
+
+                for (PartOfSpeech val : PartOfSpeech.values()) {
+                    if (val.toString().equals(cur)) {
+                        pos = val;
+                    }
+                }
+
+                if (pos == null) {
+                    throw new RuntimeException("Error occurred grabbing point of view");
+                }
+
+                def = new StringBuilder();
+                continue;
+            }
+
+            if (pos == null) {
+                for (PartOfSpeech val : PartOfSpeech.values()) {
+                    if (val.toString().equals(cur)) {
+                        pos = val;
+                    }
+                }
+
+                if (pos == null) {
+                    pl(line);
+                    throw new RuntimeException("Error occurred grabbing point of view");
+                }
+
+                def = new StringBuilder();
+                continue;
+            }
+
+            if (c0 > '1' && c0 <= '9' ||
+                    c0 > 'A' || c0 <= 'Z') {
+                aggregate.add(new WordDefinition(def.toString(), pos));
+            }
+        }
     }
 
     private static long backtrack(long currentIdx) throws IOException {
         while (true) {
-            char c = (char) OxfordDictionary.dictionary.read();
+            char c = (char) dictionary.read();
             if (c != '\n' && currentIdx != 0) {
                 currentIdx--;
                 dictionary.seek(currentIdx);
@@ -223,5 +279,10 @@ public final class OxfordDictionary {
         }
 
         return currentIdx;
+    }
+
+    public static String readLine() throws IOException {
+        String line = dictionary.readLine();
+        return new String(line.getBytes("ISO-8859-1"), "UTF-8");
     }
 }
