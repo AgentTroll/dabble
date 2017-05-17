@@ -1,14 +1,14 @@
 package com.gmail.woodyc40.dabble.dictionary;
 
 public enum PartOfSpeech {
-    NOUN("n."),
-    ADJECTIVE("adj."),
-    ADVERB("adv."),
-    PRONOUN("pron."),
-    PREPOSITION("prep."),
-    INTERJECTION("int."),
-    VERB("v."),
-    CONJUNCTION("conj.");
+    NOUN("n"),
+    ADJECTIVE("adj"),
+    ADVERB("adv"),
+    PRONOUN("pron"),
+    PREPOSITION("prep"),
+    INTERJECTION("int"),
+    VERB("v"),
+    CONJUNCTION("conj");
 
     private final String dict;
 

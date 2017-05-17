@@ -128,6 +128,16 @@ public final class OxfordDictionary {
                     // length, no further results are found
                     // b/c all lower combos have been cmp'd
                     if (depth == word.length()) {
+                        // Unless the word is shorter than the
+                        // pivot, in which case, go back and
+                        // recheck
+                        if (word.length() < dictWord.length()) {
+                            depth--;
+                            dictionary.seek(mid);
+                            max = backtrack(mid);
+                            continue;
+                        }
+
                         return Collections.emptyList();
                     }
                 }
@@ -140,7 +150,7 @@ public final class OxfordDictionary {
     private static boolean tryAggregate(String word, String dictWord, String def, List<WordDefinition> aggregate)
             throws IOException {
         char lc = dictWord.charAt(dictWord.length() - 1);
-        if (lc > '0' && lc < '9') {
+        if (isNum(lc)) {
             dictWord = dictWord.replace(lc, ' ').trim();
         } else {
             if (word.equalsIgnoreCase(dictWord)) {
@@ -164,7 +174,7 @@ public final class OxfordDictionary {
                 // as of the  moment there are no 2digits
                 // but this will break (as in literally)
                 // if there are
-                if (lc > '0' && lc < '9') {
+                if (isNum(lc)) {
                     dictWord = dictWord.replace(lc, ' ').trim();
                 }
 
@@ -185,7 +195,7 @@ public final class OxfordDictionary {
                 String[] split = dictWord.split("  ");
                 dictWord = split[0];
                 lc = dictWord.charAt(dictWord.length() - 1);
-                if (lc > '0' && lc < '9') {
+                if (isNum(lc)) {
                     dictWord = dictWord.replace(lc, ' ').trim();
                 }
 
@@ -211,48 +221,32 @@ public final class OxfordDictionary {
         // (#) - Presense indicates multiple definitions
         // (A) - Presence indicates multiple definitions
         // Definition
-        String[] split = line.split(Pattern.quote(". "));
+        String[] split = line.split("—");
+        if (split.length > 1) {
+            for (int i = 1; i < split.length; i++) {
+                compose(split[i], aggregate);
+            }
+            return;
+        }
+
+        split = line.split(Pattern.quote(" "));
 
         StringBuilder def = null;
         PartOfSpeech pos = null;
 
-        char prevLetter = 0;
-        char prevNumber = 0;
+        boolean bracket = false;
 
-        for (int i = 0; i < split.length; i++) {
-            String cur = split[i];
+        for (String cur : split) {
             char c0 = cur.charAt(0);
-
-            if (c0 == '—') {
-                if (def != null) {
-                    aggregate.add(new WordDefinition(def.toString(), pos));
-                }
-
-                cur = cur.replace('—', ' ').trim();
-
-                for (PartOfSpeech val : PartOfSpeech.values()) {
-                    if (val.toString().equals(cur)) {
-                        pos = val;
-                    }
-                }
-
-                if (pos == null) {
-                    throw new RuntimeException("Error occurred grabbing point of view");
-                }
-
-                def = new StringBuilder();
-                continue;
-            }
 
             if (pos == null) {
                 for (PartOfSpeech val : PartOfSpeech.values()) {
-                    if (val.toString().equals(cur)) {
+                    if (val.toString().charAt(0) == c0) {
                         pos = val;
                     }
                 }
 
                 if (pos == null) {
-                    pl(line);
                     throw new RuntimeException("Error occurred grabbing point of view");
                 }
 
@@ -260,11 +254,27 @@ public final class OxfordDictionary {
                 continue;
             }
 
-            if (c0 > '1' && c0 <= '9' ||
-                    c0 > 'A' || c0 <= 'Z') {
-                aggregate.add(new WordDefinition(def.toString(), pos));
+            if (c0 == ']' && bracket) {
+                bracket = false;
+                continue;
+            }
+
+            if (c0 == '[' || bracket) {
+                bracket = true;
+                continue;
+            }
+
+            if ((c0 >= 'A' && c0 <= 'Z' || isNum(c0)) && cur.length() == 1) {
+                if (def.length() > 0) {
+                    aggregate.add(new WordDefinition(def.toString().trim(), pos));
+                    def = new StringBuilder();
+                }
+            } else {
+                def.append(cur).append(' ');
             }
         }
+
+        aggregate.add(new WordDefinition(def.toString().trim(), pos));
     }
 
     private static long backtrack(long currentIdx) throws IOException {
@@ -281,8 +291,12 @@ public final class OxfordDictionary {
         return currentIdx;
     }
 
-    public static String readLine() throws IOException {
+    private static String readLine() throws IOException {
         String line = dictionary.readLine();
         return new String(line.getBytes("ISO-8859-1"), "UTF-8");
+    }
+
+    private static boolean isNum(char c) {
+        return c >= '1' && c <= '9';
     }
 }

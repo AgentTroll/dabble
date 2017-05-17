@@ -16,7 +16,6 @@
 package com.gmail.woodyc40.dabble;
 
 import com.gmail.woodyc40.dabble.dictionary.OxfordDictionary;
-import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
 import com.gmail.woodyc40.dabble.lexing.Sentence;
 import com.gmail.woodyc40.dabble.parsing.Parser;
 
@@ -49,10 +48,6 @@ public final class Main {
         lf();
         pl("Press Ctrl-C to exit");
         lf();
-
-        for (WordDefinition definition : OxfordDictionary.lookup("drill")) {
-            pl(definition.getDefinition());
-        }
 
         Scanner scanner = new Scanner(System.in);
         Parser parser = new Parser();
