@@ -16,5 +16,4 @@
 package com.gmail.woodyc40.dabble.context;
 
 public class Profile {
-
 }

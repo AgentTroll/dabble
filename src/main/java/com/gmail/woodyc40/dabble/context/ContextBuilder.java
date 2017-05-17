@@ -15,5 +15,52 @@
  */
 package com.gmail.woodyc40.dabble.context;
 
+import com.gmail.woodyc40.dabble.brain.Brain;
+import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
+import com.gmail.woodyc40.dabble.lexing.Sentence;
+import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
+@RequiredArgsConstructor
 public class ContextBuilder {
+    private final String word;
+
+    private Sentence sentence;
+    private List<WordDefinition> definitions;
+
+    public static ContextBuilder forWord(String word) {
+        return new ContextBuilder(word);
+    }
+
+    public static ContextBuilder forDefinition(WordDefinition def) {
+        ContextBuilder builder = new ContextBuilder("");
+        builder.sentence = new Sentence(def.getDefinition());
+
+        return builder;
+    }
+
+    public ContextBuilder in(Sentence sentence) {
+        this.sentence = sentence;
+        return this;
+    }
+
+    public ContextBuilder recursiveDefine() {
+        for (String w : this.sentence.getIndividualWords()) {
+            if (w.equals(this.word)) {
+                this.definitions = Brain.getInstance().define(w);
+                continue;
+            }
+
+            if (Brain.getInstance().getMemory().isDefined(w)) {
+                continue;
+            } else {
+                for (WordDefinition def : Brain.getInstance().define(w)) {
+                    forDefinition(def).recursiveDefine();
+                }
+            }
+        }
+
+        return this;
+    }
 }

@@ -16,14 +16,23 @@
 package com.gmail.woodyc40.dabble.parsing;
 
 import com.gmail.woodyc40.dabble.brain.Brain;
+import com.gmail.woodyc40.dabble.context.ContextBuilder;
 import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
 import com.gmail.woodyc40.dabble.lexing.Sentence;
+
+import java.util.List;
 
 public class Parser {
     public void parse(Sentence sentence) {
         for (String word : sentence.getIndividualWords()) {
             Brain brain = Brain.getInstance();
-            WordDefinition def = brain.define(word);
+            brain.define(word);
+
+            ContextBuilder.
+                    forWord(word).
+                    in(sentence).
+                    recursiveDefine();
+
         }
     }
 }

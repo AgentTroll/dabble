@@ -17,6 +17,8 @@ package com.gmail.woodyc40.dabble.lexing;
 
 import lombok.Getter;
 
+import java.util.regex.Pattern;
+
 public class Sentence {
     @Getter
     private final String input;
@@ -28,7 +30,16 @@ public class Sentence {
         this.individualWords = input.split(" ");
 
         for (int i = 0; i < this.individualWords.length; i++) {
-            this.individualWords[i] = this.individualWords[i].trim();
+            String s = this.individualWords[i].trim();
+
+            for (int j = 0; j < s.length(); j++) {
+                char c = s.charAt(j);
+                if (c > 'Z' || c < 'A') { // TODO idk how to do this
+                    s = s.replaceAll(Pattern.quote(String.valueOf(c)), "");
+                }
+            }
+
+            this.individualWords[i] = s;
         }
     }
 }

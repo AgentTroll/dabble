@@ -15,5 +15,21 @@
  */
 package com.gmail.woodyc40.dabble.brain;
 
+import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+
 public class Memory {
+    private final Map<String, List<WordDefinition>> cache = new HashMap<>();
+
+    public List<WordDefinition> define(String word, Function<String, List<WordDefinition>> func) {
+        return this.cache.computeIfAbsent(word.toLowerCase(), func);
+    }
+
+    public boolean isDefined(String word) {
+        return this.cache.containsKey(word.toLowerCase());
+    }
 }

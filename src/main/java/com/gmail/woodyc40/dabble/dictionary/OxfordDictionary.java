@@ -23,6 +23,7 @@ import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -111,7 +112,8 @@ public final class OxfordDictionary {
                 // reading the line
                 char letter = depth >= dictWord.length() ? Character.MIN_VALUE : dictWord.charAt(depth);
                 if (letter > curItr) {
-                    max = dictionary.getFilePointer();
+                    dictionary.seek(mid);
+                    max = backtrack(mid);
                 } else if (curItr > letter) {
                     min = dictionary.getFilePointer();
                 } else {
@@ -291,9 +293,14 @@ public final class OxfordDictionary {
         return currentIdx;
     }
 
+    // https://stackoverflow.com/questions/1008802/converting-symbols-accent-letters-to-english-alphabet
+    // https://stackoverflow.com/questions/9964892/how-to-read-utf8-encoded-file-using-randomaccessfile
     private static String readLine() throws IOException {
         String line = dictionary.readLine();
-        return new String(line.getBytes("ISO-8859-1"), "UTF-8");
+        String str = new String(line.getBytes("ISO-8859-1"), "UTF-8");
+        String nfdNormalizedString = Normalizer.normalize(str, Normalizer.Form.NFD);
+        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+        return pattern.matcher(nfdNormalizedString).replaceAll("");
     }
 
     private static boolean isNum(char c) {

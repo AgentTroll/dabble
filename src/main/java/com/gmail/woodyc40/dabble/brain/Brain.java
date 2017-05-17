@@ -15,20 +15,25 @@
  */
 package com.gmail.woodyc40.dabble.brain;
 
+import com.gmail.woodyc40.dabble.dictionary.OxfordDictionary;
 import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
 import lombok.Getter;
 
-public final class Brain {
-    @Getter
-    private static final Brain instance = new Brain();
+import java.util.List;
 
-    private final Memory memory;
+import static com.gmail.woodyc40.dabble.util.UtilityMethods.pl;
+
+public final class Brain {
+    @Getter private static final Brain instance = new Brain();
+
+    @Getter private final Memory memory;
 
     private Brain() {
         this.memory = new Memory();
     }
 
-    public WordDefinition define(String word) {
-        return null;
+    public List<WordDefinition> define(String word) {
+        pl("Defining " + word);
+        return this.memory.define(word, OxfordDictionary::lookup);
     }
 }
