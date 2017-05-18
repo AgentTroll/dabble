@@ -17,29 +17,37 @@ package com.gmail.woodyc40.dabble.lexing;
 
 import lombok.Getter;
 
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Sentence {
     @Getter
     private final String input;
     @Getter
-    private final String[] individualWords;
+    private final List<String> individualWords = new ArrayList<>();
 
     public Sentence(String input) {
         this.input = input;
-        this.individualWords = input.split(" ");
+        String[] individualWords = input.split(" ");
 
-        for (int i = 0; i < this.individualWords.length; i++) {
-            String s = this.individualWords[i].trim();
+        for (int i = 0; i < individualWords.length; i++) {
+            String s = individualWords[i].toLowerCase().trim();
+            if (s.startsWith("-")) {
+                continue;
+            }
 
+            StringBuilder builder = new StringBuilder();
             for (int j = 0; j < s.length(); j++) {
                 char c = s.charAt(j);
-                if (c > 'Z' || c < 'A') { // TODO idk how to do this
-                    s = s.replaceAll(Pattern.quote(String.valueOf(c)), "");
+                if (c >= 'a' && c <= 'z') {
+                    builder.append(c);
                 }
             }
 
-            this.individualWords[i] = s;
+            s = builder.toString().trim();
+            if (!s.isEmpty()) {
+                this.individualWords.add(s);
+            }
         }
     }
 }

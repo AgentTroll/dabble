@@ -27,6 +27,7 @@ import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.gmail.woodyc40.dabble.util.UtilityMethods.p;
@@ -74,19 +75,13 @@ public final class OxfordDictionary {
     }
 
     public static List<WordDefinition> lookup(String word) {
-        // Actually the oxford .txt file is not wholly UTF-8
-        // most of it is, except for the special symbols
-        // which are UTF-16 (? what's more, there are also
-        // some 3-byte spechars)
         word = word.toLowerCase(); // canonical casing
-        int depth = 0;
         List<WordDefinition> aggregateList = new ArrayList<>(1);
 
         try {
             long min = 0L;
             long max = dictionary.length();
-            while (true) {
-                char curItr = word.charAt(depth);
+            while (min <= max) {
                 long mid = (min + max) / 2L;
                 dictionary.seek(mid);
 
@@ -95,58 +90,60 @@ public final class OxfordDictionary {
 
                 String line = readLine();
                 String[] split = line.split("  ");
-                String dictWord = split[0].toLowerCase();
-
-                // If not narrowed down enough, decrement
-                // the depth and try again
-                if (!dictWord.startsWith(word.substring(0, depth))) {
-                    depth--;
-                    continue;
+                String dictWord;
+                if (split.length < 2 && !line.isEmpty()) {
+                    dictWord = line.substring(0, line.indexOf(' '));
+                } else {
+                    dictWord = split[0].toLowerCase();
                 }
 
-                // If the definition is too short, then the
-                // word will always come after, set to the
-                // min value to raise min to mid
+                int letter = -1;
+                int actual = -1;
 
-                // File pointer already advanced after
-                // reading the line
-                char letter = depth >= dictWord.length() ? Character.MIN_VALUE : dictWord.charAt(depth);
-                if (letter > curItr) {
+                for (int i = 0; i < word.length() && i < dictWord.length(); i++) {
+                    char c = dictWord.charAt(i);
+                    char c1 = word.charAt(i);
+                    if (c != c1) {
+                        letter = c;
+                        actual = c1;
+                        break;
+                    }
+                }
+
+                if (letter == -1 && actual == -1 && dictWord.length() < word.length()) {
+                    actual = 0;
+                }
+
+                if (letter > actual) {
+                    mid -= 3;
                     dictionary.seek(mid);
                     max = backtrack(mid);
-                } else if (curItr > letter) {
+                } else if (actual > letter) {
                     min = dictionary.getFilePointer();
                 } else {
                     if (tryAggregate(word, dictWord, split[1], aggregateList)) {
                         return aggregateList;
-                    }
+                    } else {
+                        if (letter == -1 && actual == -1) {
+                            letter = dictWord.length();
+                            actual = word.length();
 
-                    // If all the letter at the current
-                    // depth already matches, then look at
-                    // the next letter
-                    depth++;
-
-                    // If the depth is longer than the word
-                    // length, no further results are found
-                    // b/c all lower combos have been cmp'd
-                    if (depth == word.length()) {
-                        // Unless the word is shorter than the
-                        // pivot, in which case, go back and
-                        // recheck
-                        if (word.length() < dictWord.length()) {
-                            depth--;
-                            dictionary.seek(mid);
-                            max = backtrack(mid);
-                            continue;
+                            if (letter > actual) {
+                                mid -= 3;
+                                dictionary.seek(mid);
+                                max = backtrack(mid);
+                            } else if (actual > letter) {
+                                min = dictionary.getFilePointer();
+                            }
                         }
-
-                        return Collections.emptyList();
                     }
                 }
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        return Collections.emptyList();
     }
 
     private static boolean tryAggregate(String word, String dictWord, String def, List<WordDefinition> aggregate)
@@ -156,7 +153,7 @@ public final class OxfordDictionary {
             dictWord = dictWord.replace(lc, ' ').trim();
         } else {
             if (word.equalsIgnoreCase(dictWord)) {
-                compose(def, aggregate);
+                compose(def, null, aggregate);
                 return true;
             }
         }
@@ -181,7 +178,7 @@ public final class OxfordDictionary {
                 }
 
                 if (word.equalsIgnoreCase(dictWord)) {
-                    compose(split[1], aggregate);
+                    compose(split[1], null, aggregate);
                 } else {
                     break;
                 }
@@ -202,7 +199,7 @@ public final class OxfordDictionary {
                 }
 
                 if (word.equalsIgnoreCase(dictWord)) {
-                    compose(split[1], aggregate);
+                    compose(split[1], null, aggregate);
                 } else {
                     break;
                 }
@@ -216,17 +213,19 @@ public final class OxfordDictionary {
         return false;
     }
 
-    private static void compose(String line, List<WordDefinition> aggregate) {
+    private static void compose(String line, Matcher match, List<WordDefinition> aggregate) {
         // Format:
         // (—) - Presence indicates change in POS
         // POS - Part of speech
         // (#) - Presense indicates multiple definitions
         // (A) - Presence indicates multiple definitions
         // Definition
-        String[] split = line.split("—");
+        Pattern pat = Pattern.compile("—\\w+\\.");
+        String[] split = pat.split(line);
+
         if (split.length > 1) {
             for (int i = 1; i < split.length; i++) {
-                compose(split[i], aggregate);
+                compose(split[i], pat.matcher(line), aggregate);
             }
             return;
         }
@@ -239,17 +238,35 @@ public final class OxfordDictionary {
         boolean bracket = false;
 
         for (String cur : split) {
+            if (cur.isEmpty()) {
+                continue;
+            }
+
             char c0 = cur.charAt(0);
 
             if (pos == null) {
+                String group;
+                if (match == null) {
+                    group = cur;
+                } else {
+                    if (!match.find()) {
+                        throw new RuntimeException("Error occurred grabbing point of view");
+                    }
+                    group = match.group().replaceAll("—", "");
+                }
+
                 for (PartOfSpeech val : PartOfSpeech.values()) {
-                    if (val.toString().charAt(0) == c0) {
+                    if (val.toString().equals(group.toLowerCase())) {
                         pos = val;
+                        break;
                     }
                 }
 
                 if (pos == null) {
-                    throw new RuntimeException("Error occurred grabbing point of view");
+                    if (!group.endsWith(".")) {
+                        continue;
+                    }
+                    throw new RuntimeException("Error occurred grabbing point of view: " + group);
                 }
 
                 def = new StringBuilder();

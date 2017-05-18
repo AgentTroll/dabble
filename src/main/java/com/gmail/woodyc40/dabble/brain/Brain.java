@@ -21,8 +21,6 @@ import lombok.Getter;
 
 import java.util.List;
 
-import static com.gmail.woodyc40.dabble.util.UtilityMethods.pl;
-
 public final class Brain {
     @Getter private static final Brain instance = new Brain();
 
@@ -33,7 +31,6 @@ public final class Brain {
     }
 
     public List<WordDefinition> define(String word) {
-        pl("Defining " + word);
         return this.memory.define(word, OxfordDictionary::lookup);
     }
 }

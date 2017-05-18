@@ -16,14 +16,34 @@
 package com.gmail.woodyc40.dabble.dictionary;
 
 public enum PartOfSpeech {
-    NOUN("n"),
-    ADJECTIVE("adj"),
-    ADVERB("adv"),
-    PRONOUN("pron"),
-    PREPOSITION("prep"),
-    INTERJECTION("int"),
-    VERB("v"),
-    CONJUNCTION("conj");
+    NOUN("n."),
+    ADJECTIVE("adj."),
+    ADVERB("adv."),
+    PRONOUN("pron."),
+    PREPOSITION("prep."),
+    INTERJECTION("int."),
+    VERB("v."),
+    CONJUNCTION("conj."),
+    SYMBOL("symb."),
+    WTF("rel."),
+    ABBREVIATION("abbr."),
+    PAST("past"),
+    VARIANT("var."),
+    DEMONSTRATIVE("demons."),
+    PLURAL("pl."),
+    PREDICATE("predic."),
+    INTERROGATIVE("interrog."),
+    NOUN_PLURAL("n.pl."),
+    AUXILLARY_VERB("v.aux."),
+    WTF_2("attrib."),
+    POSSESSIVE("poss."), // most of these aren't a real part of speech, lmao
+    WTF_3("comb."),
+    LOOK_SOMEWHERE_ELSE("see"),
+    SUPERLATIVE("superl."),
+    SINGULAR("sing."),
+    PRESENT("pres."),
+    OBJECTIVE("objective"),
+    COMPARATIVE("compar.");
 
     private final String dict;
 
