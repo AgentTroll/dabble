@@ -15,6 +15,7 @@
  */
 package com.gmail.woodyc40.dabble.dictionary;
 
+import com.gmail.woodyc40.dabble.context.ContextProcessor;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -22,4 +23,7 @@ import lombok.Getter;
 public class WordDefinition {
     @Getter private final String definition;
     @Getter private final PartOfSpeech partOfSpeech;
+
+    public void indexAgainst(ContextProcessor sentence) {
+    }
 }

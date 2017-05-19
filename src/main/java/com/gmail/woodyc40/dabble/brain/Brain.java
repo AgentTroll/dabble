@@ -19,8 +19,10 @@ import com.gmail.woodyc40.dabble.dictionary.OxfordDictionary;
 import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
 import lombok.Getter;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.List;
 
+@ThreadSafe
 public final class Brain {
     @Getter private static final Brain instance = new Brain();
 

@@ -17,11 +17,13 @@ package com.gmail.woodyc40.dabble.brain;
 
 import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+@NotThreadSafe
 public class Memory {
     private final Map<String, List<WordDefinition>> cache = new HashMap<>();
 

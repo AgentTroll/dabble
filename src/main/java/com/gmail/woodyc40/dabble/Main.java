@@ -19,10 +19,12 @@ import com.gmail.woodyc40.dabble.dictionary.OxfordDictionary;
 import com.gmail.woodyc40.dabble.lexing.Sentence;
 import com.gmail.woodyc40.dabble.parsing.Parser;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.Scanner;
 
 import static com.gmail.woodyc40.dabble.util.UtilityMethods.*;
 
+@ThreadSafe
 public final class Main {
     public static void main(String[] args) {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> pl("SIGINT captured, exiting...")));

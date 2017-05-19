@@ -15,5 +15,17 @@
  */
 package com.gmail.woodyc40.dabble.context;
 
+import jdk.nashorn.internal.ir.annotations.Immutable;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@Immutable
+@RequiredArgsConstructor
 public class Profile {
+    private static final Profile instance =
+            new Profile("Johnny", 16);
+
+    private final String name;
+    private final int age;
 }

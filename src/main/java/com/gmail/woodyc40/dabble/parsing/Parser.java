@@ -15,20 +15,28 @@
  */
 package com.gmail.woodyc40.dabble.parsing;
 
-import com.gmail.woodyc40.dabble.brain.Brain;
 import com.gmail.woodyc40.dabble.context.ContextBuilder;
+import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
 import com.gmail.woodyc40.dabble.lexing.Sentence;
 
-public class Parser {
-    public void parse(Sentence sentence) {
-        for (String word : sentence.getIndividualWords()) {
-            Brain brain = Brain.getInstance();
-            brain.define(word);
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-            ContextBuilder.
-                    forWord(word).
-                    in(sentence).
-                    recursiveDefine();
+public class Parser {
+    public Map<String, List<WordDefinition>> parse(Sentence sentence) {
+        Map<String, List<WordDefinition>> definitions =
+                new HashMap<>();
+        for (String word : sentence.getIndividualWords()) {
+            List<WordDefinition> defs =
+                    ContextBuilder.
+                            forWord(word).
+                            in(sentence).
+                            recursiveDefine().
+                            getDefinitions();
+            definitions.put(word, defs);
         }
+
+        return definitions;
     }
 }

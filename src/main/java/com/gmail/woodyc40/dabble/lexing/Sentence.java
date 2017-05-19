@@ -15,12 +15,13 @@
  */
 package com.gmail.woodyc40.dabble.lexing;
 
+import com.gmail.woodyc40.dabble.context.Context;
 import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Sentence {
+public class Sentence implements Context<List<String>> {
     @Getter
     private final String input;
     @Getter
@@ -49,5 +50,13 @@ public class Sentence {
                 this.individualWords.add(s);
             }
         }
+    }
+
+    @Override public String name() {
+        return "individualWords";
+    }
+
+    @Override public List<String> value() {
+        return this.individualWords;
     }
 }

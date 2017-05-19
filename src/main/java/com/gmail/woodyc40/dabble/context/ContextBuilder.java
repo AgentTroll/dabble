@@ -18,16 +18,19 @@ package com.gmail.woodyc40.dabble.context;
 import com.gmail.woodyc40.dabble.brain.Brain;
 import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
 import com.gmail.woodyc40.dabble.lexing.Sentence;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import java.util.List;
 
+@NotThreadSafe
 @RequiredArgsConstructor
 public class ContextBuilder {
     private final String word;
 
     private Sentence sentence;
-    private List<WordDefinition> definitions;
+    @Getter private List<WordDefinition> definitions;
 
     public static ContextBuilder forWord(String word) {
         return new ContextBuilder(word);
@@ -51,14 +54,11 @@ public class ContextBuilder {
                 this.definitions = Brain.getInstance().define(w);
                 continue;
             }
+        }
 
-            if (Brain.getInstance().getMemory().isDefined(w)) {
-                continue;
-            } else {
-                for (WordDefinition def : Brain.getInstance().define(w)) {
-                    forDefinition(def).recursiveDefine();
-                }
-            }
+        ContextProcessor processor = new ContextProcessor(this.sentence);
+        for (WordDefinition definition : this.definitions) {
+            definition.indexAgainst(processor);
         }
 
         return this;

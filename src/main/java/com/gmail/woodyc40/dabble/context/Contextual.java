@@ -15,10 +15,8 @@
  */
 package com.gmail.woodyc40.dabble.context;
 
-import lombok.AllArgsConstructor;
+import java.util.List;
 
-@AllArgsConstructor
-public class Contextual<T> {
-    private final String name;
-    private final T value;
+public interface Contextual {
+    List<Context<?>> contexts();
 }
