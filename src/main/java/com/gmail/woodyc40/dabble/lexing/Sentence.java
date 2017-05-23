@@ -29,6 +29,7 @@ public class Sentence implements Context<List<String>> {
 
     public Sentence(String input) {
         this.input = input;
+
         String[] individualWords = input.split(" ");
 
         for (int i = 0; i < individualWords.length; i++) {

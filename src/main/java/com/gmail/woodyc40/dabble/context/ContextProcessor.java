@@ -15,11 +15,15 @@ public class ContextProcessor {
             new HashMap<>();
 
     @Getter private double relevance;
-    @Getter private final Sentence base;
+    private final Sentence base;
 
-    public void process(Sentence sentence) {
+    public void step() {
+        // TODO
+    }
+
+    public void process(Sentence toIndex) {
         for (RelevanceIndexer indexer : indexers.values()) {
-            this.relevance += indexer.index();
+            this.relevance += indexer.index(this.base, toIndex);
         }
     }
 }

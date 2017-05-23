@@ -15,6 +15,8 @@
  */
 package com.gmail.woodyc40.dabble.dictionary;
 
+import com.gmail.woodyc40.dabble.lexing.Sentence;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
@@ -153,7 +155,7 @@ public final class OxfordDictionary {
             dictWord = dictWord.replace(lc, ' ').trim();
         } else {
             if (word.equalsIgnoreCase(dictWord)) {
-                compose(def, null, aggregate);
+                compose(word, def, null, aggregate);
                 return true;
             }
         }
@@ -178,7 +180,7 @@ public final class OxfordDictionary {
                 }
 
                 if (word.equalsIgnoreCase(dictWord)) {
-                    compose(split[1], null, aggregate);
+                    compose(word, split[1], null, aggregate);
                 } else {
                     break;
                 }
@@ -199,7 +201,7 @@ public final class OxfordDictionary {
                 }
 
                 if (word.equalsIgnoreCase(dictWord)) {
-                    compose(split[1], null, aggregate);
+                    compose(word, split[1], null, aggregate);
                 } else {
                     break;
                 }
@@ -213,7 +215,7 @@ public final class OxfordDictionary {
         return false;
     }
 
-    private static void compose(String line, Matcher match, List<WordDefinition> aggregate) {
+    private static void compose(String word, String line, Matcher match, List<WordDefinition> aggregate) {
         // Format:
         // (—) - Presence indicates change in POS
         // POS - Part of speech
@@ -225,7 +227,7 @@ public final class OxfordDictionary {
 
         if (split.length > 1) {
             for (int i = 1; i < split.length; i++) {
-                compose(split[i], pat.matcher(line), aggregate);
+                compose(word, split[i], pat.matcher(line), aggregate);
             }
             return;
         }
@@ -285,7 +287,7 @@ public final class OxfordDictionary {
 
             if ((c0 >= 'A' && c0 <= 'Z' || isNum(c0)) && cur.length() == 1) {
                 if (def.length() > 0) {
-                    aggregate.add(new WordDefinition(def.toString().trim(), pos));
+                    aggregate.add(new WordDefinition(word, new Sentence(def.toString().trim()), pos));
                     def = new StringBuilder();
                 }
             } else {
@@ -293,7 +295,7 @@ public final class OxfordDictionary {
             }
         }
 
-        aggregate.add(new WordDefinition(def.toString().trim(), pos));
+        aggregate.add(new WordDefinition(word, new Sentence(def.toString().trim()), pos));
     }
 
     private static long backtrack(long currentIdx) throws IOException {

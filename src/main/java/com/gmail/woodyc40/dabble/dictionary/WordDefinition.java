@@ -15,15 +15,24 @@
  */
 package com.gmail.woodyc40.dabble.dictionary;
 
+import com.gmail.woodyc40.dabble.context.Context;
 import com.gmail.woodyc40.dabble.context.ContextProcessor;
+import com.gmail.woodyc40.dabble.lexing.Sentence;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
 @AllArgsConstructor
 public class WordDefinition {
-    @Getter private final String definition;
-    @Getter private final PartOfSpeech partOfSpeech;
+    private final String word;
+    private final Sentence definition;
+    private final PartOfSpeech partOfSpeech;
+    private final List<Context<?>> contexts = new ArrayList<>();
 
-    public void indexAgainst(ContextProcessor sentence) {
+    public void indexWith(ContextProcessor proc) {
+        proc.process(this.definition);
     }
 }

@@ -18,49 +18,64 @@ package com.gmail.woodyc40.dabble.context;
 import com.gmail.woodyc40.dabble.brain.Brain;
 import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
 import com.gmail.woodyc40.dabble.lexing.Sentence;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import java.util.List;
+import java.util.*;
 
 @NotThreadSafe
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ContextBuilder {
     private final String word;
+    private final Sentence sentence;
 
-    private Sentence sentence;
-    @Getter private List<WordDefinition> definitions;
+    @Getter private final List<WordDefinition> definitions =
+            new LinkedList<>();
 
-    public static ContextBuilder forWord(String word) {
-        return new ContextBuilder(word);
-    }
+    public static void recurse(Sentence sentence) {
+        for (String w : sentence.getIndividualWords()) {
+            if (Brain.getInstance().getMemory().isDefined(w))
+                return;
 
-    public static ContextBuilder forDefinition(WordDefinition def) {
-        ContextBuilder builder = new ContextBuilder("");
-        builder.sentence = new Sentence(def.getDefinition());
-
-        return builder;
-    }
-
-    public ContextBuilder in(Sentence sentence) {
-        this.sentence = sentence;
-        return this;
-    }
-
-    public ContextBuilder recursiveDefine() {
-        for (String w : this.sentence.getIndividualWords()) {
-            if (w.equals(this.word)) {
-                this.definitions = Brain.getInstance().define(w);
-                continue;
+            for (WordDefinition d : Brain.getInstance().define(w)) {
+                recurse(d.getDefinition());
             }
         }
+    }
 
-        ContextProcessor processor = new ContextProcessor(this.sentence);
+    public static ContextBuilder forWord(String word, Sentence sentence) {
+        return new ContextBuilder(word, sentence);
+    }
+
+    public ContextBuilder defineWord() {
+        this.definitions.addAll(Brain.getInstance().define(this.word));
+        return this;
+    }
+
+    public ContextBuilder buildContext() {
+        Map<Double, WordDefinition> defs = new TreeMap<>();
         for (WordDefinition definition : this.definitions) {
-            definition.indexAgainst(processor);
+            ContextProcessor processor = new ContextProcessor(this.sentence);
+
+            this.recursiveBuildContext(definition, processor);
+            defs.put(processor.getRelevance(), definition);
         }
 
+        this.definitions.addAll(defs.values());
+
         return this;
+    }
+
+    private void recursiveBuildContext(WordDefinition definition, ContextProcessor processor) {
+        definition.indexWith(processor);
+
+        for (String w : definition.getDefinition().getIndividualWords()) {
+            processor.step();
+            for (WordDefinition d : Brain.getInstance().define(w)) {
+                this.recursiveBuildContext(d, processor);
+            }
+        }
     }
 }

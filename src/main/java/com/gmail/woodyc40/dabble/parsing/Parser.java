@@ -24,17 +24,17 @@ import java.util.List;
 import java.util.Map;
 
 public class Parser {
-    public Map<String, List<WordDefinition>> parse(Sentence sentence) {
-        Map<String, List<WordDefinition>> definitions =
-                new HashMap<>();
+    public Map<String, WordDefinition> parse(Sentence sentence) {
+        ContextBuilder.recurse(sentence);
+
+        Map<String, WordDefinition> definitions = new HashMap<>();
         for (String word : sentence.getIndividualWords()) {
-            List<WordDefinition> defs =
-                    ContextBuilder.
-                            forWord(word).
-                            in(sentence).
-                            recursiveDefine().
-                            getDefinitions();
-            definitions.put(word, defs);
+            List<WordDefinition> defs = ContextBuilder.
+                    forWord(word, sentence).
+                    defineWord().
+                    buildContext().
+                    getDefinitions();
+            definitions.put(word, defs.get(0));
         }
 
         return definitions;
