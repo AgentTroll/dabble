@@ -43,7 +43,11 @@ public enum PartOfSpeech {
     SINGULAR("sing."),
     PRESENT("pres."),
     OBJECTIVE("objective"),
-    COMPARATIVE("compar.");
+    COMPARATIVE("compar."),
+    PREFIX("prefix"),
+    SUFFIX("suffix"),
+    ABBR_2("Abbr."),
+    CONTRADICTION("contr.");
 
     private final String dict;
 

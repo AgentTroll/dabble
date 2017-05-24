@@ -17,7 +17,6 @@ package com.gmail.woodyc40.dabble.parsing;
 
 import com.gmail.woodyc40.dabble.context.ContextBuilder;
 import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
-import com.gmail.woodyc40.dabble.lexing.Sentence;
 
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +33,12 @@ public class Parser {
                     defineWord().
                     buildContext().
                     getDefinitions();
-            definitions.put(word, defs.get(0));
+
+            if (defs.isEmpty()) {
+                definitions.put(word, WordDefinition.NONE);
+            } else {
+                definitions.put(word, defs.get(0));
+            }
         }
 
         return definitions;

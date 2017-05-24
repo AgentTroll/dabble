@@ -13,15 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gmail.woodyc40.dabble.context;
+package com.gmail.woodyc40.dabble.indexer;
 
+import com.gmail.woodyc40.dabble.context.RelevanceIndexer;
 import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
 import com.gmail.woodyc40.dabble.parsing.Sentence;
 
-@FunctionalInterface
-public interface RelevanceIndexer {
-    double index(Sentence base, WordDefinition toIndex);
+import javax.annotation.concurrent.Immutable;
 
-    default void step() {
+@Immutable
+public class Repetition implements RelevanceIndexer {
+    @Override
+    public double index(Sentence base, WordDefinition toIndex) {
+        int count = 1;
+        int reps = 1;
+        for (String s : base.getIndividualWords()) {
+            for (String s0 : toIndex.getDefinition().getIndividualWords()) {
+                reps++;
+                if (s.equalsIgnoreCase(s0)) {
+                    count++;
+                }
+            }
+        }
+
+        return count / (double) reps;
     }
 }

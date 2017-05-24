@@ -30,4 +30,16 @@ public final class UtilityMethods {
     public static void p(String s) {
         System.out.print(s);
     }
+
+    public static String strip(String s) {
+        StringBuilder builder = new StringBuilder();
+        for (int j = 0; j < s.length(); j++) {
+            char c = s.charAt(j);
+            if (c >= 'a' && c <= 'z') {
+                builder.append(c);
+            }
+        }
+
+        return builder.toString().trim();
+    }
 }

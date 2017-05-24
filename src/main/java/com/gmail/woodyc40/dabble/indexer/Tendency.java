@@ -1,4 +1,4 @@
-/*
+/**
  * Dabble contextual dictionary - Copyright 2017 Johnny Cao
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,32 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gmail.woodyc40.dabble.brain;
+package com.gmail.woodyc40.dabble.indexer;
 
-import com.gmail.woodyc40.dabble.dictionary.OxfordDictionary;
+import com.gmail.woodyc40.dabble.context.RelevanceIndexer;
 import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
+import com.gmail.woodyc40.dabble.parsing.Sentence;
 import com.gmail.woodyc40.dabble.tags.TimesDefined;
-import lombok.Getter;
 
-import javax.annotation.concurrent.ThreadSafe;
-import java.util.List;
+import javax.annotation.concurrent.NotThreadSafe;
 
-@ThreadSafe
-public final class Brain {
-    @Getter private static final Brain instance = new Brain();
+@NotThreadSafe
+public class Tendency implements RelevanceIndexer {
+    private int definitions = 0;
 
-    @Getter private final Memory memory;
-
-    private Brain() {
-        this.memory = new Memory();
-    }
-
-    public List<WordDefinition> define(String word) {
-        List<WordDefinition> define = this.memory.define(word, OxfordDictionary::lookup);
-        for (WordDefinition d : define) {
-            d.get(TimesDefined.class).setValue(Integer.valueOf(0));
-        }
-
-        return define;
+    @Override
+    public double index(Sentence base, WordDefinition toIndex) {
+        this.definitions++;
+        return toIndex.get(TimesDefined.class).value() / (3.0 * this.definitions);
     }
 }

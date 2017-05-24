@@ -13,15 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gmail.woodyc40.dabble.context;
+package com.gmail.woodyc40.dabble.tags;
 
-import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
-import com.gmail.woodyc40.dabble.parsing.Sentence;
+import com.gmail.woodyc40.dabble.context.Context;
 
-@FunctionalInterface
-public interface RelevanceIndexer {
-    double index(Sentence base, WordDefinition toIndex);
+import javax.annotation.concurrent.NotThreadSafe;
 
-    default void step() {
+@NotThreadSafe
+public class TimesDefined implements Context<Integer> {
+    private int count = 0;
+
+    @Override
+    public Integer value() {
+        return this.count;
+    }
+
+    @Override
+    public void setValue(Integer val) {
+        this.count++;
     }
 }

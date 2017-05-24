@@ -17,7 +17,7 @@ package com.gmail.woodyc40.dabble.context;
 
 import com.gmail.woodyc40.dabble.brain.Brain;
 import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
-import com.gmail.woodyc40.dabble.lexing.Sentence;
+import com.gmail.woodyc40.dabble.parsing.Sentence;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +33,8 @@ public class ContextBuilder {
 
     @Getter private final List<WordDefinition> definitions =
             new LinkedList<>();
+
+    private final Set<WordDefinition> recursed = new HashSet<>();
 
     public static void recurse(Sentence sentence) {
         for (String w : sentence.getIndividualWords()) {
@@ -55,7 +57,8 @@ public class ContextBuilder {
     }
 
     public ContextBuilder buildContext() {
-        Map<Double, WordDefinition> defs = new TreeMap<>();
+        // Go high to low
+        Map<Double, WordDefinition> defs = new TreeMap<>(Comparator.reverseOrder());
         for (WordDefinition definition : this.definitions) {
             ContextProcessor processor = new ContextProcessor(this.sentence);
 
@@ -63,6 +66,7 @@ public class ContextBuilder {
             defs.put(processor.getRelevance(), definition);
         }
 
+        this.definitions.clear();
         this.definitions.addAll(defs.values());
 
         return this;
@@ -74,6 +78,11 @@ public class ContextBuilder {
         for (String w : definition.getDefinition().getIndividualWords()) {
             processor.step();
             for (WordDefinition d : Brain.getInstance().define(w)) {
+                if (this.recursed.contains(d)) {
+                    continue;
+                }
+
+                this.recursed.add(d);
                 this.recursiveBuildContext(d, processor);
             }
         }

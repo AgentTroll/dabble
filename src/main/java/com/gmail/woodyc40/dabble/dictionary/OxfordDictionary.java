@@ -15,7 +15,7 @@
  */
 package com.gmail.woodyc40.dabble.dictionary;
 
-import com.gmail.woodyc40.dabble.lexing.Sentence;
+import com.gmail.woodyc40.dabble.parsing.Sentence;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,6 +34,7 @@ import java.util.regex.Pattern;
 
 import static com.gmail.woodyc40.dabble.util.UtilityMethods.p;
 import static com.gmail.woodyc40.dabble.util.UtilityMethods.pl;
+import static com.gmail.woodyc40.dabble.util.UtilityMethods.strip;
 
 public final class OxfordDictionary {
     private static final RandomAccessFile dictionary;
@@ -102,6 +103,7 @@ public final class OxfordDictionary {
                 int letter = -1;
                 int actual = -1;
 
+                dictWord = strip(dictWord);
                 for (int i = 0; i < word.length() && i < dictWord.length(); i++) {
                     char c = dictWord.charAt(i);
                     char c1 = word.charAt(i);
@@ -268,7 +270,7 @@ public final class OxfordDictionary {
                     if (!group.endsWith(".")) {
                         continue;
                     }
-                    throw new RuntimeException("Error occurred grabbing point of view: " + group);
+                    throw new RuntimeException("Error occurred grabbing point of view for \"" + line + "\" - " + group);
                 }
 
                 def = new StringBuilder();

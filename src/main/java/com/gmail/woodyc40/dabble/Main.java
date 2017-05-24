@@ -16,10 +16,12 @@
 package com.gmail.woodyc40.dabble;
 
 import com.gmail.woodyc40.dabble.dictionary.OxfordDictionary;
-import com.gmail.woodyc40.dabble.lexing.Sentence;
+import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
 import com.gmail.woodyc40.dabble.parsing.Parser;
+import com.gmail.woodyc40.dabble.parsing.Sentence;
 
 import javax.annotation.concurrent.ThreadSafe;
+import java.util.Map;
 import java.util.Scanner;
 
 import static com.gmail.woodyc40.dabble.util.UtilityMethods.*;
@@ -59,9 +61,13 @@ public final class Main {
             String str = scanner.nextLine();
 
             Sentence sentence = new Sentence(str);
-            parser.parse(sentence);
+            Map<String, WordDefinition> definitionMap = parser.parse(sentence);
 
-            lf();
+            definitionMap.forEach((k, v) -> {
+                pl(k + " => ");
+                pl('\t' + v.getDefinition().getInput());
+                lf();
+            });
         }
     }
 }

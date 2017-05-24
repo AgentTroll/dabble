@@ -17,22 +17,38 @@ package com.gmail.woodyc40.dabble.dictionary;
 
 import com.gmail.woodyc40.dabble.context.Context;
 import com.gmail.woodyc40.dabble.context.ContextProcessor;
-import com.gmail.woodyc40.dabble.lexing.Sentence;
+import com.gmail.woodyc40.dabble.context.Contextual;
+import com.gmail.woodyc40.dabble.parsing.Sentence;
+import com.gmail.woodyc40.dabble.tags.TimesDefined;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.annotation.concurrent.NotThreadSafe;
+import java.util.HashMap;
+import java.util.Map;
 
-@Getter
+@NotThreadSafe
+@EqualsAndHashCode(of = "word")
 @AllArgsConstructor
-public class WordDefinition {
-    private final String word;
-    private final Sentence definition;
-    private final PartOfSpeech partOfSpeech;
-    private final List<Context<?>> contexts = new ArrayList<>();
+public class WordDefinition implements Contextual {
+    public static WordDefinition NONE = new WordDefinition("No definition found...",
+            new Sentence("No definition found..."),
+            PartOfSpeech.LOOK_SOMEWHERE_ELSE);
+
+    @Getter private final String word;
+    @Getter private final Sentence definition;
+    @Getter private final PartOfSpeech partOfSpeech;
+    private final Map<Class<? extends Context<?>>, Context<?>> contexts = new HashMap<Class<? extends Context<?>>, Context<?>>() {{
+            put(TimesDefined.class, new TimesDefined());
+    }};
 
     public void indexWith(ContextProcessor proc) {
-        proc.process(this.definition);
+        proc.process(this);
+    }
+
+    @Override
+    public <T> Context<T> get(Class<? extends Context<T>> cls) {
+        return (Context<T>) contexts.get(cls);
     }
 }

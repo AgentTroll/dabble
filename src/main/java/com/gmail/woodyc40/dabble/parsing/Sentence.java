@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gmail.woodyc40.dabble.lexing;
+package com.gmail.woodyc40.dabble.parsing;
 
 import com.gmail.woodyc40.dabble.context.Context;
 import lombok.Getter;
@@ -21,43 +21,35 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.gmail.woodyc40.dabble.util.UtilityMethods.strip;
+
 public class Sentence implements Context<List<String>> {
-    @Getter
-    private final String input;
-    @Getter
-    private final List<String> individualWords = new ArrayList<>();
+    @Getter private final String input;
+    @Getter private final List<String> individualWords = new ArrayList<>();
 
     public Sentence(String input) {
         this.input = input;
 
         String[] individualWords = input.split(" ");
 
-        for (int i = 0; i < individualWords.length; i++) {
-            String s = individualWords[i].toLowerCase().trim();
+        for (String individualWord : individualWords) {
+            String s = individualWord.toLowerCase().trim();
             if (s.startsWith("-")) {
                 continue;
             }
 
-            StringBuilder builder = new StringBuilder();
-            for (int j = 0; j < s.length(); j++) {
-                char c = s.charAt(j);
-                if (c >= 'a' && c <= 'z') {
-                    builder.append(c);
-                }
-            }
-
-            s = builder.toString().trim();
+            s = strip(s);
             if (!s.isEmpty()) {
                 this.individualWords.add(s);
             }
         }
     }
 
-    @Override public String name() {
-        return "individualWords";
-    }
-
     @Override public List<String> value() {
         return this.individualWords;
+    }
+
+    @Override public void setValue(List<String> val) {
+        this.individualWords.addAll(val);
     }
 }

@@ -15,8 +15,6 @@
  */
 package com.gmail.woodyc40.dabble.context;
 
-import java.util.List;
-
 public interface Contextual {
-    List<Context<?>> contexts();
+    <T> Context<T> get(Class<? extends Context<T>> cls);
 }
