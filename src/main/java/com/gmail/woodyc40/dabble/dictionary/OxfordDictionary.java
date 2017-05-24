@@ -17,6 +17,7 @@ package com.gmail.woodyc40.dabble.dictionary;
 
 import com.gmail.woodyc40.dabble.parsing.Sentence;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
@@ -36,6 +37,7 @@ import static com.gmail.woodyc40.dabble.util.UtilityMethods.p;
 import static com.gmail.woodyc40.dabble.util.UtilityMethods.pl;
 import static com.gmail.woodyc40.dabble.util.UtilityMethods.strip;
 
+@NotThreadSafe
 public final class OxfordDictionary {
     private static final RandomAccessFile dictionary;
 

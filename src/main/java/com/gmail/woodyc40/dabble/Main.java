@@ -19,17 +19,29 @@ import com.gmail.woodyc40.dabble.dictionary.OxfordDictionary;
 import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
 import com.gmail.woodyc40.dabble.parsing.Parser;
 import com.gmail.woodyc40.dabble.parsing.Sentence;
+import com.gmail.woodyc40.dabble.training.Trainer;
 
-import javax.annotation.concurrent.ThreadSafe;
-import java.util.Map;
+import javax.annotation.concurrent.Immutable;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 import static com.gmail.woodyc40.dabble.util.UtilityMethods.*;
 
-@ThreadSafe
+@Immutable
 public final class Main {
+    private static final String DEBUG = "-d";
+
     public static void main(String[] args) {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> pl("SIGINT captured, exiting...")));
+        List<String> ag = Arrays.asList(args);
+
+        boolean doesDebugging = false;
+
+        if (ag.contains(DEBUG)) {
+            doesDebugging = true;
+        }
+
         pl("                                                  ,---.'|              \n" +
                 "    ,---,       ,---,           ,---,.     ,---,. |   | :       ,---,. \n" +
                 "  .'  .' `\\    '  .' \\        ,'  .'  \\  ,'  .'  \\:   : |     ,'  .' | \n" +
@@ -50,6 +62,8 @@ public final class Main {
         pl("AP Computer Science 2017 - Johnny Cao");
         OxfordDictionary.init();
         lf();
+        Trainer.init();
+        lf();
         pl("Press Ctrl-C to exit");
         lf();
 
@@ -60,12 +74,17 @@ public final class Main {
             p("Define: ");
             String str = scanner.nextLine();
 
-            Sentence sentence = new Sentence(str);
-            Map<String, WordDefinition> definitionMap = parser.parse(sentence);
+            if (doesDebugging && !str.contains(" ")) {
+                OxfordDictionary.lookup(str);
+                return;
+            }
 
-            definitionMap.forEach((k, v) -> {
-                pl(k + " => ");
-                pl('\t' + v.getDefinition().getInput());
+            Sentence sentence = new Sentence(str);
+            List<WordDefinition> defs = parser.parse(sentence);
+
+            defs.forEach(e -> {
+                pl(e.getWord() + " => ");
+                pl('\t' + e.getDefinition().getInput());
                 lf();
             });
         }

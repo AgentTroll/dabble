@@ -16,17 +16,21 @@
 package com.gmail.woodyc40.dabble.parsing;
 
 import com.gmail.woodyc40.dabble.context.ContextBuilder;
+import com.gmail.woodyc40.dabble.dictionary.PartOfSpeech;
 import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
 
-import java.util.HashMap;
+import javax.annotation.concurrent.Immutable;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
+@Immutable
 public class Parser {
-    public Map<String, WordDefinition> parse(Sentence sentence) {
+    private static final Sentence NO_DEF = new Sentence("No definition found...");
+
+    public List<WordDefinition> parse(Sentence sentence) {
         ContextBuilder.recurse(sentence);
 
-        Map<String, WordDefinition> definitions = new HashMap<>();
+        List<WordDefinition> definitions = new ArrayList<>();
         for (String word : sentence.getIndividualWords()) {
             List<WordDefinition> defs = ContextBuilder.
                     forWord(word, sentence).
@@ -35,9 +39,9 @@ public class Parser {
                     getDefinitions();
 
             if (defs.isEmpty()) {
-                definitions.put(word, WordDefinition.NONE);
+                definitions.add(new WordDefinition(word, NO_DEF, PartOfSpeech.LOOK_SOMEWHERE_ELSE));
             } else {
-                definitions.put(word, defs.get(0));
+                definitions.add(defs.get(0));
             }
         }
 

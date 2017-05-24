@@ -24,6 +24,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 @NotThreadSafe
 public class Depth implements RelevanceIndexer {
     private int depth = 1;
+    private int count;
 
     @Override
     public void step() {
@@ -32,6 +33,7 @@ public class Depth implements RelevanceIndexer {
 
     @Override
     public double index(Sentence base, WordDefinition toIndex) {
-        return 0.001 / this.depth;
+        this.count++;
+        return 0.001 / (this.depth * this.count);
     }
 }

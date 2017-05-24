@@ -24,11 +24,11 @@ import javax.annotation.concurrent.NotThreadSafe;
 
 @NotThreadSafe
 public class Tendency implements RelevanceIndexer {
-    private int definitions = 0;
+    private int count;
 
     @Override
     public double index(Sentence base, WordDefinition toIndex) {
-        this.definitions++;
-        return toIndex.get(TimesDefined.class).value() / (3.0 * this.definitions);
+        this.count++;
+        return toIndex.get(TimesDefined.class).value() / (3.0 * this.count);
     }
 }

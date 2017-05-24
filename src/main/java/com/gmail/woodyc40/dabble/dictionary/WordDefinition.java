@@ -32,10 +32,6 @@ import java.util.Map;
 @EqualsAndHashCode(of = "word")
 @AllArgsConstructor
 public class WordDefinition implements Contextual {
-    public static WordDefinition NONE = new WordDefinition("No definition found...",
-            new Sentence("No definition found..."),
-            PartOfSpeech.LOOK_SOMEWHERE_ELSE);
-
     @Getter private final String word;
     @Getter private final Sentence definition;
     @Getter private final PartOfSpeech partOfSpeech;

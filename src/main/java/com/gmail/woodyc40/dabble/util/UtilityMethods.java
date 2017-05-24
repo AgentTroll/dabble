@@ -15,6 +15,9 @@
  */
 package com.gmail.woodyc40.dabble.util;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public final class UtilityMethods {
     private UtilityMethods() { // Prevent instantiation
     }
@@ -35,7 +38,7 @@ public final class UtilityMethods {
         StringBuilder builder = new StringBuilder();
         for (int j = 0; j < s.length(); j++) {
             char c = s.charAt(j);
-            if (c >= 'a' && c <= 'z') {
+            if (c >= 'a' && c <= 'z' || c == ' ') {
                 builder.append(c);
             }
         }
