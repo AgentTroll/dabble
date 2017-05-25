@@ -15,11 +15,11 @@
  */
 package com.gmail.woodyc40.dabble.indexer;
 
-import com.gmail.woodyc40.dabble.context.RelevanceIndexer;
 import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
 import com.gmail.woodyc40.dabble.parsing.Sentence;
 
 import javax.annotation.concurrent.NotThreadSafe;
+import java.util.List;
 
 @NotThreadSafe
 public class Depth implements RelevanceIndexer {
@@ -32,7 +32,7 @@ public class Depth implements RelevanceIndexer {
     }
 
     @Override
-    public double index(Sentence base, WordDefinition toIndex) {
+    public double index(Sentence base, WordDefinition toIndex, List<WordDefinition> accepted) {
         this.count++;
         return 0.001 / (this.depth * this.count);
     }

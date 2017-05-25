@@ -35,8 +35,9 @@ public class WordDefinition implements Contextual {
     @Getter private final String word;
     @Getter private final Sentence definition;
     @Getter private final PartOfSpeech partOfSpeech;
+    @Getter private final boolean changesPos;
     private final Map<Class<? extends Context<?>>, Context<?>> contexts = new HashMap<Class<? extends Context<?>>, Context<?>>() {{
-            put(TimesDefined.class, new TimesDefined());
+        this.put(TimesDefined.class, new TimesDefined());
     }};
 
     public void indexWith(ContextProcessor proc) {
@@ -44,7 +45,7 @@ public class WordDefinition implements Contextual {
     }
 
     @Override
-    public <T> Context<T> get(Class<? extends Context<T>> cls) {
-        return (Context<T>) contexts.get(cls);
+    public <T, R extends Context<T>> R get(Class<? extends Context<T>> cls)  {
+        return (R) this.contexts.get(cls);
     }
 }

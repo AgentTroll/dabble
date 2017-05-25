@@ -16,5 +16,5 @@
 package com.gmail.woodyc40.dabble.context;
 
 public interface Contextual {
-    <T> Context<T> get(Class<? extends Context<T>> cls);
+    <T, R extends Context<T>> R get(Class<? extends Context<T>> cls);
 }

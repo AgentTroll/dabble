@@ -16,16 +16,23 @@
 package com.gmail.woodyc40.dabble.parsing;
 
 import com.gmail.woodyc40.dabble.context.Context;
+import com.gmail.woodyc40.dabble.context.Contextual;
 import lombok.Getter;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.gmail.woodyc40.dabble.util.UtilityMethods.strip;
 
-public class Sentence implements Context<List<String>> {
+@NotThreadSafe
+public class Sentence implements Contextual {
     @Getter private final String input;
     @Getter private final List<String> individualWords = new ArrayList<>();
+    @Getter private final Map<Class<? extends Context<?>>, Context<?>> contexts =
+            new HashMap<>();
 
     public Sentence(String input) {
         this.input = input;
@@ -45,11 +52,8 @@ public class Sentence implements Context<List<String>> {
         }
     }
 
-    @Override public List<String> value() {
-        return this.individualWords;
-    }
-
-    @Override public void setValue(List<String> val) {
-        this.individualWords.addAll(val);
+    @Override
+    public <T, R extends Context<T>> R get(Class<? extends Context<T>> cls) {
+        return (R) this.contexts.get(cls);
     }
 }

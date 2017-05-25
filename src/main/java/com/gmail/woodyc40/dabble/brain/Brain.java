@@ -36,7 +36,7 @@ public final class Brain {
     public List<WordDefinition> define(String word) {
         List<WordDefinition> define = this.memory.define(word, OxfordDictionary::lookup);
         for (WordDefinition d : define) {
-            d.get(TimesDefined.class).setValue(Integer.valueOf(0));
+            d.get(TimesDefined.class).setValue(0);
         }
 
         return define;

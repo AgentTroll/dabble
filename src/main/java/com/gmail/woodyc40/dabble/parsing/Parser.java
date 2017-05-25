@@ -16,7 +16,6 @@
 package com.gmail.woodyc40.dabble.parsing;
 
 import com.gmail.woodyc40.dabble.context.ContextBuilder;
-import com.gmail.woodyc40.dabble.dictionary.PartOfSpeech;
 import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
 
 import javax.annotation.concurrent.Immutable;
@@ -25,26 +24,19 @@ import java.util.List;
 
 @Immutable
 public class Parser {
-    private static final Sentence NO_DEF = new Sentence("No definition found...");
-
     public List<WordDefinition> parse(Sentence sentence) {
         ContextBuilder.recurse(sentence);
 
-        List<WordDefinition> definitions = new ArrayList<>();
+        List<WordDefinition> accepted = new ArrayList<>();
         for (String word : sentence.getIndividualWords()) {
-            List<WordDefinition> defs = ContextBuilder.
-                    forWord(word, sentence).
+            WordDefinition definition = ContextBuilder.
+                    forWord(word, sentence, accepted).
                     defineWord().
                     buildContext().
-                    getDefinitions();
-
-            if (defs.isEmpty()) {
-                definitions.add(new WordDefinition(word, NO_DEF, PartOfSpeech.LOOK_SOMEWHERE_ELSE));
-            } else {
-                definitions.add(defs.get(0));
-            }
+                    getDefinition();
+            accepted.add(definition);
         }
 
-        return definitions;
+        return accepted;
     }
 }

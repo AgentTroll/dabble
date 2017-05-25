@@ -19,7 +19,6 @@ import com.gmail.woodyc40.dabble.brain.Brain;
 import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
 import com.gmail.woodyc40.dabble.parsing.Sentence;
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import javax.annotation.concurrent.NotThreadSafe;
@@ -28,10 +27,13 @@ import java.util.*;
 @NotThreadSafe
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ContextBuilder {
+    private static final Sentence NO_DEF = new Sentence("No definition found...");
+
     private final String word;
     private final Sentence sentence;
+    private final List<WordDefinition> accepted;
 
-    @Getter private final List<WordDefinition> definitions =
+    private final List<WordDefinition> definitions =
             new LinkedList<>();
 
     private final Set<WordDefinition> recursed = new HashSet<>();
@@ -47,8 +49,8 @@ public class ContextBuilder {
         }
     }
 
-    public static ContextBuilder forWord(String word, Sentence sentence) {
-        return new ContextBuilder(word, sentence);
+    public static ContextBuilder forWord(String word, Sentence sentence, List<WordDefinition> accepted) {
+        return new ContextBuilder(word, sentence, accepted);
     }
 
     public ContextBuilder defineWord() {
@@ -57,10 +59,10 @@ public class ContextBuilder {
     }
 
     public ContextBuilder buildContext() {
-        // Go high to low
-        Map<Double, WordDefinition> defs = new TreeMap<>(Comparator.reverseOrder());
-        for (WordDefinition definition : this.definitions) {
-            ContextProcessor processor = new ContextProcessor(this.sentence);
+        // Go high to lown
+            Map<Double, WordDefinition> defs = new TreeMap<>(Comparator.reverseOrder());
+            for (WordDefinition definition : this.definitions) {
+                ContextProcessor processor = new ContextProcessor(this.sentence, this.accepted);
 
             this.recursiveBuildContext(definition, processor);
             defs.put(processor.getRelevance(), definition);
@@ -70,6 +72,15 @@ public class ContextBuilder {
         this.definitions.addAll(defs.values());
 
         return this;
+    }
+
+    public WordDefinition getDefinition() {
+        WordDefinition def = this.definitions.get(0);
+        if (def == null) {
+            return new WordDefinition(this.word, NO_DEF, null, false);
+        }
+
+        return def;
     }
 
     private void recursiveBuildContext(WordDefinition definition, ContextProcessor processor) {

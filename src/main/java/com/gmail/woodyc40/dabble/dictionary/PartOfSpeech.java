@@ -24,6 +24,8 @@ public enum PartOfSpeech {
     INTERJECTION("int."),
     VERB("v."),
     CONJUNCTION("conj."),
+
+    // These are tenses...
     SYMBOL("symb."),
     WTF("rel."),
     ABBREVIATION("abbr."),

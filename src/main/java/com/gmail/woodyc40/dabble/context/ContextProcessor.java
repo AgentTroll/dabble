@@ -15,10 +15,8 @@
  */
 package com.gmail.woodyc40.dabble.context;
 
+import com.gmail.woodyc40.dabble.indexer.*;
 import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
-import com.gmail.woodyc40.dabble.indexer.Depth;
-import com.gmail.woodyc40.dabble.indexer.Repetition;
-import com.gmail.woodyc40.dabble.indexer.Tendency;
 import com.gmail.woodyc40.dabble.parsing.Sentence;
 import lombok.Getter;
 
@@ -28,18 +26,21 @@ import java.util.List;
 
 @NotThreadSafe
 public class ContextProcessor {
-    @Getter private static final Class<?>[] INDEXERS = {
-            Depth.class,
+    @Getter private static final Class<?>[] INDEXERS =
+            { Depth.class,
             Repetition.class,
-            Tendency.class };
+            Tendency.class,
+            Pos.class };
 
     @Getter private double relevance;
 
     private final Sentence base;
+    private final List<WordDefinition> accepted;
     private final List<RelevanceIndexer> indexers = new ArrayList<>(INDEXERS.length);
 
-    public ContextProcessor(Sentence sentence) {
+    public ContextProcessor(Sentence sentence, List<WordDefinition> accepted) {
         this.base = sentence;
+        this.accepted = accepted;
 
         for (Class<?> c : INDEXERS) {
             try {
@@ -58,7 +59,7 @@ public class ContextProcessor {
 
     public void process(WordDefinition toIndex) {
         for (RelevanceIndexer indexer : this.indexers) {
-            this.relevance += indexer.index(this.base, toIndex);
+            this.relevance += indexer.index(this.base, toIndex, this.accepted);
         }
     }
 }

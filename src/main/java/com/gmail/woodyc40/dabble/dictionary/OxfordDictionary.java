@@ -291,7 +291,7 @@ public final class OxfordDictionary {
 
             if ((c0 >= 'A' && c0 <= 'Z' || isNum(c0)) && cur.length() == 1) {
                 if (def.length() > 0) {
-                    aggregate.add(new WordDefinition(word, new Sentence(def.toString().trim()), pos));
+                    aggregate.add(new WordDefinition(word, new Sentence(def.toString().trim()), pos, match != null));
                     def = new StringBuilder();
                 }
             } else {
@@ -299,7 +299,7 @@ public final class OxfordDictionary {
             }
         }
 
-        aggregate.add(new WordDefinition(word, new Sentence(def.toString().trim()), pos));
+        aggregate.add(new WordDefinition(word, new Sentence(def.toString().trim()), pos, match != null));
     }
 
     private static long backtrack(long currentIdx) throws IOException {

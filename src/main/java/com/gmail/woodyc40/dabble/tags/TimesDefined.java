@@ -21,7 +21,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 
 @NotThreadSafe
 public class TimesDefined implements Context<Integer> {
-    private int count = 0;
+    private int count;
 
     @Override
     public Integer value() {
