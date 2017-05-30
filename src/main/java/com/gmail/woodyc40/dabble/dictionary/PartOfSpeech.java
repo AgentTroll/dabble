@@ -15,6 +15,13 @@
  */
 package com.gmail.woodyc40.dabble.dictionary;
 
+import lombok.Getter;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public enum PartOfSpeech {
     NOUN("n."),
     ADJECTIVE("adj."),
@@ -27,7 +34,7 @@ public enum PartOfSpeech {
 
     // These are tenses...
     SYMBOL("symb."),
-    WTF("rel."),
+    REL("rel."),
     ABBREVIATION("abbr."),
     PAST("past"),
     VARIANT("var."),
@@ -37,9 +44,9 @@ public enum PartOfSpeech {
     INTERROGATIVE("interrog."),
     NOUN_PLURAL("n.pl."),
     AUXILLARY_VERB("v.aux."),
-    WTF_2("attrib."),
+    ATTRIB("attrib."),
     POSSESSIVE("poss."), // most of these aren't a real part of speech, lmao
-    WTF_3("comb."),
+    COMB("comb."),
     LOOK_SOMEWHERE_ELSE("see"),
     SUPERLATIVE("superl."),
     SINGULAR("sing."),
@@ -48,15 +55,26 @@ public enum PartOfSpeech {
     COMPARATIVE("compar."),
     PREFIX("prefix"),
     SUFFIX("suffix"),
-    ABBR_2("Abbr."),
-    CONTRADICTION("contr.");
+    ABBR("Abbr."),
+    CONTRADICTION("contr."),
+    UNKNOWN("");
+
+    @Getter private static final Map<PartOfSpeech, List<PartOfSpeech[]>> paradigms =
+            new HashMap<>();
+    static {
+        paradigms.put(NOUN, Arrays.asList(
+                new PartOfSpeech[] { NOUN, ADJECTIVE, VERB },
+                new PartOfSpeech[] { NOUN, VERB }));
+        paradigms.put(ADJECTIVE, Arrays.asList(
+                new PartOfSpeech[] { ADJECTIVE },
+                new PartOfSpeech[] { ADJECTIVE, NOUN }));
+    }
 
     private final String dict;
 
     PartOfSpeech(String dict) {
         this.dict = dict;
     }
-
     @Override public String toString() {
         return this.dict;
     }

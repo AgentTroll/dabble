@@ -15,6 +15,7 @@
  */
 package com.gmail.woodyc40.dabble.indexer;
 
+import com.gmail.woodyc40.dabble.context.ContextProcessor;
 import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
 import com.gmail.woodyc40.dabble.parsing.Sentence;
 
@@ -32,7 +33,7 @@ public class Depth implements RelevanceIndexer {
     }
 
     @Override
-    public double index(Sentence base, WordDefinition toIndex, List<WordDefinition> accepted) {
+    public double index(Sentence base, WordDefinition toIndex, List<WordDefinition> accepted, ContextProcessor processor) {
         this.count++;
         return 0.001 / (this.depth * this.count);
     }

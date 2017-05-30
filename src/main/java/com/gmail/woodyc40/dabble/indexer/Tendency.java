@@ -15,6 +15,7 @@
  */
 package com.gmail.woodyc40.dabble.indexer;
 
+import com.gmail.woodyc40.dabble.context.ContextProcessor;
 import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
 import com.gmail.woodyc40.dabble.parsing.Sentence;
 import com.gmail.woodyc40.dabble.tags.TimesDefined;
@@ -27,7 +28,7 @@ public class Tendency implements RelevanceIndexer {
     private int count;
 
     @Override
-    public double index(Sentence base, WordDefinition toIndex, List<WordDefinition> accepted) {
+    public double index(Sentence base, WordDefinition toIndex, List<WordDefinition> accepted, ContextProcessor processor) {
         this.count++;
         return toIndex.get(TimesDefined.class).value() / (3.0 * this.count);
     }

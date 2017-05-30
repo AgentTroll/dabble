@@ -34,13 +34,15 @@ public class ContextProcessor {
 
     @Getter private double relevance;
 
+    @Getter private final int wordIdx;
     private final Sentence base;
     private final List<WordDefinition> accepted;
     private final List<RelevanceIndexer> indexers = new ArrayList<>(INDEXERS.length);
 
-    public ContextProcessor(Sentence sentence, List<WordDefinition> accepted) {
-        this.base = sentence;
-        this.accepted = accepted;
+    public ContextProcessor(ContextBuilder builder) {
+        this.base = builder.getSentence();
+        this.accepted = builder.getAccepted();
+        this.wordIdx = builder.getIdx();
 
         for (Class<?> c : INDEXERS) {
             try {
@@ -59,7 +61,7 @@ public class ContextProcessor {
 
     public void process(WordDefinition toIndex) {
         for (RelevanceIndexer indexer : this.indexers) {
-            this.relevance += indexer.index(this.base, toIndex, this.accepted);
+            this.relevance += indexer.index(this.base, toIndex, this.accepted, this);
         }
     }
 }

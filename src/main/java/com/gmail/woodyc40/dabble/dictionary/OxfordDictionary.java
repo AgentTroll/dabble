@@ -223,15 +223,16 @@ public final class OxfordDictionary {
         // Format:
         // (—) - Presence indicates change in POS
         // POS - Part of speech
-        // (#) - Presense indicates multiple definitions
+        // (#) - Presence indicates multiple definitions
         // (A) - Presence indicates multiple definitions
         // Definition
         Pattern pat = Pattern.compile("—\\w+\\.");
         String[] split = pat.split(line);
 
         if (split.length > 1) {
+            Matcher matcher = pat.matcher(line);
             for (int i = 1; i < split.length; i++) {
-                compose(word, split[i], pat.matcher(line), aggregate);
+                compose(word, split[i], matcher, aggregate);
             }
             return;
         }

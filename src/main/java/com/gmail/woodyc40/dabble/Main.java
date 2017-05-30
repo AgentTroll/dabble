@@ -33,7 +33,6 @@ public final class Main {
     private static final String DEBUG = "-d";
 
     public static void main(String[] args) {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> pl("SIGINT captured, exiting...")));
         List<String> ag = Arrays.asList(args);
 
         boolean doesDebugging = false;
@@ -62,7 +61,9 @@ public final class Main {
         pl("AP Computer Science 2017 - Johnny Cao");
         OxfordDictionary.init();
         lf();
-        Trainer.init();
+        if (!doesDebugging) {
+            Trainer.init();
+        }
         lf();
         pl("Press Ctrl-C to exit");
         lf();
@@ -75,8 +76,12 @@ public final class Main {
             String str = scanner.nextLine();
 
             if (doesDebugging && !str.contains(" ")) {
-                OxfordDictionary.lookup(str);
-                return;
+                OxfordDictionary.lookup(str).forEach(e -> {
+                    pl(e.getWord() + " => ");
+                    pl('\t' + e.getPartOfSpeech().name() + " - " + e.getDefinition().getInput());
+                    lf();
+                });
+                continue;
             }
 
             Sentence sentence = new Sentence(str);
@@ -84,7 +89,7 @@ public final class Main {
 
             defs.forEach(e -> {
                 pl(e.getWord() + " => ");
-                pl('\t' + e.getDefinition().getInput());
+                pl('\t' + e.getPartOfSpeech().name() + " - " + e.getDefinition().getInput());
                 lf();
             });
         }

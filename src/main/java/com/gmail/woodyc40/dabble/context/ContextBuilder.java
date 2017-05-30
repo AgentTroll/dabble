@@ -16,22 +16,22 @@
 package com.gmail.woodyc40.dabble.context;
 
 import com.gmail.woodyc40.dabble.brain.Brain;
+import com.gmail.woodyc40.dabble.dictionary.PartOfSpeech;
 import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
 import com.gmail.woodyc40.dabble.parsing.Sentence;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.*;
 
 @NotThreadSafe
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ContextBuilder {
     private static final Sentence NO_DEF = new Sentence("No definition found...");
 
+    @Getter private final int idx;
     private final String word;
-    private final Sentence sentence;
-    private final List<WordDefinition> accepted;
+    @Getter private final Sentence sentence;
+    @Getter private final List<WordDefinition> accepted;
 
     private final List<WordDefinition> definitions =
             new LinkedList<>();
@@ -49,8 +49,15 @@ public class ContextBuilder {
         }
     }
 
-    public static ContextBuilder forWord(String word, Sentence sentence, List<WordDefinition> accepted) {
+    public static ContextBuilder forWord(int word, Sentence sentence, List<WordDefinition> accepted) {
         return new ContextBuilder(word, sentence, accepted);
+    }
+
+    private ContextBuilder(int word, Sentence sentence, List<WordDefinition> accepted) {
+        this.idx = word;
+        this.word = sentence.getIndividualWords().get(word);
+        this.sentence = sentence;
+        this.accepted = accepted;
     }
 
     public ContextBuilder defineWord() {
@@ -59,10 +66,10 @@ public class ContextBuilder {
     }
 
     public ContextBuilder buildContext() {
-        // Go high to lown
-            Map<Double, WordDefinition> defs = new TreeMap<>(Comparator.reverseOrder());
-            for (WordDefinition definition : this.definitions) {
-                ContextProcessor processor = new ContextProcessor(this.sentence, this.accepted);
+        // Go high to low
+        Map<Double, WordDefinition> defs = new TreeMap<>(Comparator.reverseOrder());
+        for (WordDefinition definition : this.definitions) {
+            ContextProcessor processor = new ContextProcessor(this);
 
             this.recursiveBuildContext(definition, processor);
             defs.put(processor.getRelevance(), definition);
@@ -74,20 +81,42 @@ public class ContextBuilder {
         return this;
     }
 
-    public WordDefinition getDefinition() {
-        WordDefinition def = this.definitions.get(0);
-        if (def == null) {
-            return new WordDefinition(this.word, NO_DEF, null, false);
+    public double index() {
+        Map<Double, WordDefinition> defs = new TreeMap<>(Comparator.reverseOrder());
+        for (WordDefinition definition : this.definitions) {
+            ContextProcessor processor = new ContextProcessor(this);
+
+            this.recursiveBuildContext(definition, processor);
+            defs.put(processor.getRelevance(), definition);
         }
 
-        return def;
+        this.definitions.clear();
+        this.definitions.addAll(defs.values());
+
+        if (defs.isEmpty()) {
+            return 0;
+        }
+
+        return defs.
+                keySet().
+                stream().
+                findFirst().
+                orElseThrow(RuntimeException::new);
+    }
+
+    public WordDefinition getDefinition() {
+        if (this.definitions.isEmpty()) {
+            return new WordDefinition(this.word, NO_DEF, PartOfSpeech.UNKNOWN, false);
+        }
+
+        return this.definitions.get(0);
     }
 
     private void recursiveBuildContext(WordDefinition definition, ContextProcessor processor) {
         definition.indexWith(processor);
+        processor.step();
 
         for (String w : definition.getDefinition().getIndividualWords()) {
-            processor.step();
             for (WordDefinition d : Brain.getInstance().define(w)) {
                 if (this.recursed.contains(d)) {
                     continue;

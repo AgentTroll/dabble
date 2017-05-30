@@ -28,9 +28,10 @@ public class Parser {
         ContextBuilder.recurse(sentence);
 
         List<WordDefinition> accepted = new ArrayList<>();
-        for (String word : sentence.getIndividualWords()) {
+        List<String> words = sentence.getIndividualWords();
+        for (int i = 0, size = words.size(); i < size; i++) {
             WordDefinition definition = ContextBuilder.
-                    forWord(word, sentence, accepted).
+                    forWord(i, sentence, accepted).
                     defineWord().
                     buildContext().
                     getDefinition();
