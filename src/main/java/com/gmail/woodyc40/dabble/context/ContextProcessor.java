@@ -15,6 +15,7 @@
  */
 package com.gmail.woodyc40.dabble.context;
 
+import com.gmail.woodyc40.dabble.brain.Brain;
 import com.gmail.woodyc40.dabble.indexer.*;
 import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
 import com.gmail.woodyc40.dabble.parsing.Sentence;
@@ -26,17 +27,19 @@ import java.util.List;
 
 @NotThreadSafe
 public class ContextProcessor {
-    @Getter private static final Class<?>[] INDEXERS =
-            { Depth.class,
+    @Getter private static final Class<?>[] INDEXERS = {
+            Chunker.class,
+            Depth.class,
             Repetition.class,
             Tendency.class,
             Pos.class };
 
     @Getter private double relevance;
+    @Getter private int skip;
 
     @Getter private final int wordIdx;
     private final Sentence base;
-    private final List<WordDefinition> accepted;
+    @Getter private final List<WordDefinition> accepted;
     private final List<RelevanceIndexer> indexers = new ArrayList<>(INDEXERS.length);
 
     public ContextProcessor(ContextBuilder builder) {
@@ -61,7 +64,15 @@ public class ContextProcessor {
 
     public void process(WordDefinition toIndex) {
         for (RelevanceIndexer indexer : this.indexers) {
-            this.relevance += indexer.index(this.base, toIndex, this.accepted, this);
+            double index = indexer.index(this.base, toIndex, this, this.accepted);
+            if (index < 0) {
+                this.accepted.clear();
+                this.accepted.addAll(Brain.getInstance().define(this.base.getIndividualWords().get(this.wordIdx) + ' ' + this.base.getIndividualWords().get(this.wordIdx + 1)));
+                this.skip = 1;
+                break;
+            }
+
+            this.relevance += index;
         }
     }
 }

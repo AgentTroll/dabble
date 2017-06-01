@@ -28,6 +28,7 @@ import java.util.*;
 public class ContextBuilder {
     private static final Sentence NO_DEF = new Sentence("No definition found...");
 
+    @Getter private String skip;
     @Getter private final int idx;
     private final String word;
     @Getter private final Sentence sentence;
@@ -115,6 +116,11 @@ public class ContextBuilder {
     private void recursiveBuildContext(WordDefinition definition, ContextProcessor processor) {
         definition.indexWith(processor);
         processor.step();
+
+        if (processor.getSkip() > 0) {
+            this.definitions.addAll(processor.getAccepted());
+            this.skip = processor.getAccepted().get(0).getWord();
+        }
 
         for (String w : definition.getDefinition().getIndividualWords()) {
             for (WordDefinition d : Brain.getInstance().define(w)) {

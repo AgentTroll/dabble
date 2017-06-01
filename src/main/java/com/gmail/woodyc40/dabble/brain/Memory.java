@@ -34,4 +34,8 @@ public class Memory {
     public boolean isDefined(String word) {
         return this.cache.containsKey(word.toLowerCase());
     }
+
+    public int size() {
+        return this.cache.size();
+    }
 }

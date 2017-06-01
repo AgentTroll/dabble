@@ -1,23 +1,24 @@
 package com.gmail.woodyc40.dabble.indexer;
 
 import com.gmail.woodyc40.dabble.context.ContextProcessor;
-import com.gmail.woodyc40.dabble.dictionary.PartOfSpeech;
 import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
 import com.gmail.woodyc40.dabble.parsing.Sentence;
 import com.gmail.woodyc40.dabble.tags.PosTags;
 
-import java.util.ArrayList;
+import javax.annotation.concurrent.Immutable;
 import java.util.List;
 
+@Immutable
 public class Pos implements RelevanceIndexer {
     @Override
-    public double index(Sentence base, WordDefinition toIndex, List<WordDefinition> accepted, ContextProcessor processor) {
+    public double index(Sentence base, WordDefinition toIndex, ContextProcessor processor, List<WordDefinition> accepted) {
         String word = toIndex.getWord();
-        PosTags posList = base.get(PosTags.class);
-        if (posList == null) {
-            posList = new PosTags();
-            posList.setValue(new ArrayList<>(base.getIndividualWords().size()));
+
+        if (toIndex.isChangesPos()) {
+            return 0;
         }
+
+        PosTags posList = base.get(PosTags.class);
 
         if (posList.value().isEmpty()) {
             posList.value().add(toIndex.getPartOfSpeech());
@@ -26,7 +27,6 @@ public class Pos implements RelevanceIndexer {
 
         for (int i = 0; i < base.getIndividualWords().size(); i++) {
             String w0 = base.getIndividualWords().get(i);
-            PartOfSpeech speech = posList.value().get(i);
 
             // TODO
         }

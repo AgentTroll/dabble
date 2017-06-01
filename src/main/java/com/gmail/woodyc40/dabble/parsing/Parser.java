@@ -30,11 +30,16 @@ public class Parser {
         List<WordDefinition> accepted = new ArrayList<>();
         List<String> words = sentence.getIndividualWords();
         for (int i = 0, size = words.size(); i < size; i++) {
-            WordDefinition definition = ContextBuilder.
+            ContextBuilder cb = ContextBuilder.
                     forWord(i, sentence, accepted).
                     defineWord().
-                    buildContext().
-                    getDefinition();
+                    buildContext();
+
+            WordDefinition definition = cb.getDefinition();
+            if (definition.getWord().equals(cb.getSkip())) {
+                i += cb.getSkip().split(" ").length - 1;
+            }
+
             accepted.add(definition);
         }
 

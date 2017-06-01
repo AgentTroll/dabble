@@ -28,7 +28,7 @@ public class Tendency implements RelevanceIndexer {
     private int count;
 
     @Override
-    public double index(Sentence base, WordDefinition toIndex, List<WordDefinition> accepted, ContextProcessor processor) {
+    public double index(Sentence base, WordDefinition toIndex, ContextProcessor processor, List<WordDefinition> accepted) {
         this.count++;
         return toIndex.get(TimesDefined.class).value() / (3.0 * this.count);
     }

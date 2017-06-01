@@ -23,11 +23,13 @@ import com.gmail.woodyc40.dabble.tags.TimesDefined;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.HashMap;
 import java.util.Map;
 
+@ToString
 @NotThreadSafe
 @EqualsAndHashCode(of = "word")
 @AllArgsConstructor

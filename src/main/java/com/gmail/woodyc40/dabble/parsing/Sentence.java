@@ -17,6 +17,7 @@ package com.gmail.woodyc40.dabble.parsing;
 
 import com.gmail.woodyc40.dabble.context.Context;
 import com.gmail.woodyc40.dabble.context.Contextual;
+import com.gmail.woodyc40.dabble.tags.PosTags;
 import lombok.Getter;
 
 import javax.annotation.concurrent.NotThreadSafe;
@@ -32,7 +33,9 @@ public class Sentence implements Contextual {
     @Getter private final String input;
     @Getter private final List<String> individualWords = new ArrayList<>();
     @Getter private final Map<Class<? extends Context<?>>, Context<?>> contexts =
-            new HashMap<>();
+            new HashMap<Class<? extends Context<?>>, Context<?>>() {{
+                this.put(PosTags.class, new PosTags());
+            }};
 
     public Sentence(String input) {
         this.input = input;

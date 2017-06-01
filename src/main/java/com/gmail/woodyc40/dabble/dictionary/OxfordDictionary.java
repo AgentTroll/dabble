@@ -33,13 +33,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.gmail.woodyc40.dabble.util.UtilityMethods.p;
-import static com.gmail.woodyc40.dabble.util.UtilityMethods.pl;
-import static com.gmail.woodyc40.dabble.util.UtilityMethods.strip;
+import static com.gmail.woodyc40.dabble.util.UtilityMethods.*;
 
 @NotThreadSafe
 public final class OxfordDictionary {
     private static final RandomAccessFile dictionary;
+    private static int missed;
 
     static {
         Path dir = Paths.get(System.getProperty("user.dir")).resolve("Dabble_files");
@@ -94,6 +93,10 @@ public final class OxfordDictionary {
                 backtrack(mid);
 
                 String line = readLine();
+                while (line.isEmpty() || line.startsWith("Usage  ") && !word.equals("usage")) {
+                    line = readLine();
+                }
+
                 String[] split = line.split("  ");
                 String dictWord;
                 if (split.length < 2 && !line.isEmpty()) {
@@ -149,7 +152,12 @@ public final class OxfordDictionary {
             throw new RuntimeException(e);
         }
 
+        missed++;
         return Collections.emptyList();
+    }
+
+    public static int missed() {
+        return missed;
     }
 
     private static boolean tryAggregate(String word, String dictWord, String def, List<WordDefinition> aggregate)

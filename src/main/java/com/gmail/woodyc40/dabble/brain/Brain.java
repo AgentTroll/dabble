@@ -41,4 +41,8 @@ public final class Brain {
 
         return define;
     }
+
+    public String toStatsLine() {
+        return String.format("[D: %d / M: %d]", this.memory.size(), OxfordDictionary.missed());
+    }
 }
