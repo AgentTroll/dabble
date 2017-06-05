@@ -23,7 +23,7 @@ import java.util.List;
 
 @FunctionalInterface
 public interface RelevanceIndexer {
-    double index(Sentence base, WordDefinition toIndex, ContextProcessor processor, List<WordDefinition> accepted);
+    double index(Sentence base, WordDefinition toIndex, ContextProcessor processor, List<WordDefinition> cache, List<WordDefinition> accepted);
 
     default void step() {
     }

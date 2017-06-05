@@ -15,9 +15,8 @@
  */
 package com.gmail.woodyc40.dabble.context;
 
-import com.gmail.woodyc40.dabble.brain.Brain;
-import com.gmail.woodyc40.dabble.indexer.*;
 import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
+import com.gmail.woodyc40.dabble.indexer.*;
 import com.gmail.woodyc40.dabble.parsing.Sentence;
 import lombok.Getter;
 
@@ -38,7 +37,7 @@ public class ContextProcessor {
     @Getter private int skip;
 
     @Getter private final int wordIdx;
-    private final Sentence base;
+    @Getter private final Sentence base;
     @Getter private final List<WordDefinition> accepted;
     private final List<RelevanceIndexer> indexers = new ArrayList<>(INDEXERS.length);
 
@@ -62,12 +61,13 @@ public class ContextProcessor {
         }
     }
 
-    public void process(WordDefinition toIndex) {
+    public void process(Sentence sentence, WordDefinition toIndex) {
         for (RelevanceIndexer indexer : this.indexers) {
-            double index = indexer.index(this.base, toIndex, this, this.accepted);
+            List<WordDefinition> cache = new ArrayList<>();
+            double index = indexer.index(sentence, toIndex, this, cache, this.accepted);
             if (index < 0) {
                 this.accepted.clear();
-                this.accepted.addAll(Brain.getInstance().define(this.base.getIndividualWords().get(this.wordIdx) + ' ' + this.base.getIndividualWords().get(this.wordIdx + 1)));
+                this.accepted.addAll(cache);
                 this.skip = 1;
                 break;
             }

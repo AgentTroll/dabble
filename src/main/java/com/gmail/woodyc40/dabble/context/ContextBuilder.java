@@ -23,6 +23,7 @@ import lombok.Getter;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @NotThreadSafe
 public class ContextBuilder {
@@ -34,8 +35,8 @@ public class ContextBuilder {
     @Getter private final Sentence sentence;
     @Getter private final List<WordDefinition> accepted;
 
-    private final List<WordDefinition> definitions =
-            new LinkedList<>();
+    private final Queue<WordDefinition> definitions =
+            new ConcurrentLinkedQueue<>();
 
     private final Set<WordDefinition> recursed = new HashSet<>();
 
@@ -72,7 +73,7 @@ public class ContextBuilder {
         for (WordDefinition definition : this.definitions) {
             ContextProcessor processor = new ContextProcessor(this);
 
-            this.recursiveBuildContext(definition, processor);
+            this.recursiveBuildContext(this.sentence, definition, processor);
             defs.put(processor.getRelevance(), definition);
         }
 
@@ -87,7 +88,7 @@ public class ContextBuilder {
         for (WordDefinition definition : this.definitions) {
             ContextProcessor processor = new ContextProcessor(this);
 
-            this.recursiveBuildContext(definition, processor);
+            this.recursiveBuildContext(this.sentence, definition, processor);
             defs.put(processor.getRelevance(), definition);
         }
 
@@ -110,26 +111,27 @@ public class ContextBuilder {
             return new WordDefinition(this.word, NO_DEF, PartOfSpeech.UNKNOWN, false);
         }
 
-        return this.definitions.get(0);
+        return this.definitions.peek();
     }
 
-    private void recursiveBuildContext(WordDefinition definition, ContextProcessor processor) {
-        definition.indexWith(processor);
+    private void recursiveBuildContext(Sentence sent, WordDefinition definition, ContextProcessor processor) {
+        definition.indexWith(sent, processor);
         processor.step();
 
-        if (processor.getSkip() > 0) {
+        if (processor.getSkip() > 0 && sent == this.sentence) {
             this.definitions.addAll(processor.getAccepted());
             this.skip = processor.getAccepted().get(0).getWord();
         }
 
-        for (String w : definition.getDefinition().getIndividualWords()) {
+        Sentence def = definition.getDefinition();
+        for (String w : def.getIndividualWords()) {
             for (WordDefinition d : Brain.getInstance().define(w)) {
                 if (this.recursed.contains(d)) {
                     continue;
                 }
 
                 this.recursed.add(d);
-                this.recursiveBuildContext(d, processor);
+                this.recursiveBuildContext(def, d, processor);
             }
         }
     }

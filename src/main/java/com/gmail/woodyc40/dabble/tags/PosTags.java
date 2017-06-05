@@ -11,6 +11,12 @@ import java.util.List;
 public class PosTags implements Context<List<PartOfSpeech>> {
     private final List<PartOfSpeech> posList = new ArrayList<>();
 
+    public PosTags(int size) {
+        for (int i = 0; i < size; i++) {
+            this.posList.add(PartOfSpeech.UNKNOWN);
+        }
+    }
+
     @Override
     public List<PartOfSpeech> value() {
         return this.posList;

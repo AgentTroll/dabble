@@ -21,10 +21,7 @@ import com.gmail.woodyc40.dabble.tags.PosTags;
 import lombok.Getter;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.gmail.woodyc40.dabble.util.UtilityMethods.strip;
 
@@ -33,9 +30,7 @@ public class Sentence implements Contextual {
     @Getter private final String input;
     @Getter private final List<String> individualWords = new ArrayList<>();
     @Getter private final Map<Class<? extends Context<?>>, Context<?>> contexts =
-            new HashMap<Class<? extends Context<?>>, Context<?>>() {{
-                this.put(PosTags.class, new PosTags());
-            }};
+            new HashMap<>();
 
     public Sentence(String input) {
         this.input = input;
@@ -53,6 +48,8 @@ public class Sentence implements Contextual {
                 this.individualWords.add(s);
             }
         }
+
+        this.contexts.put(PosTags.class, new PosTags(this.individualWords.size()));
     }
 
     @Override

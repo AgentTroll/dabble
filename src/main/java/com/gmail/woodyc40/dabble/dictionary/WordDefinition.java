@@ -42,8 +42,8 @@ public class WordDefinition implements Contextual {
         this.put(TimesDefined.class, new TimesDefined());
     }};
 
-    public void indexWith(ContextProcessor proc) {
-        proc.process(this);
+    public void indexWith(Sentence defining, ContextProcessor proc) {
+        proc.process(defining, this);
     }
 
     @Override

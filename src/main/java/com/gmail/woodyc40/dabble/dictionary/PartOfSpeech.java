@@ -59,15 +59,13 @@ public enum PartOfSpeech {
     CONTRADICTION("contr."),
     UNKNOWN("");
 
-    @Getter private static final Map<PartOfSpeech, List<PartOfSpeech[]>> paradigms =
+    @Getter private static final Map<PartOfSpeech, List<PartOfSpeech>> paradigms =
             new HashMap<>();
     static {
         paradigms.put(NOUN, Arrays.asList(
-                new PartOfSpeech[] { NOUN, ADJECTIVE, VERB },
-                new PartOfSpeech[] { NOUN, VERB }));
+                NOUN, ADJECTIVE, VERB));
         paradigms.put(ADJECTIVE, Arrays.asList(
-                new PartOfSpeech[] { ADJECTIVE },
-                new PartOfSpeech[] { ADJECTIVE, NOUN }));
+                ADJECTIVE));
     }
 
     private final String dict;
