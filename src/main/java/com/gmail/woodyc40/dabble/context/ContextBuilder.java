@@ -20,25 +20,25 @@ import com.gmail.woodyc40.dabble.dictionary.PartOfSpeech;
 import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
 import com.gmail.woodyc40.dabble.parsing.Sentence;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 @NotThreadSafe
 public class ContextBuilder {
     private static final Sentence NO_DEF = new Sentence("No definition found...");
 
-    @Getter private String skip;
+    @Setter @Getter private String skip;
     @Getter private final int idx;
     private final String word;
     @Getter private final Sentence sentence;
     @Getter private final List<WordDefinition> accepted;
 
-    private final Queue<WordDefinition> definitions =
-            new ConcurrentLinkedQueue<>();
+    @Getter private final List<WordDefinition> definitions =
+            new ArrayList<>();
 
-    private final Set<WordDefinition> recursed = new HashSet<>();
+    @Getter private final Set<String> recursed = new HashSet<>();
 
     public static void recurse(Sentence sentence) {
         for (String w : sentence.getIndividualWords()) {
@@ -70,7 +70,8 @@ public class ContextBuilder {
     public ContextBuilder buildContext() {
         // Go high to low
         Map<Double, WordDefinition> defs = new TreeMap<>(Comparator.reverseOrder());
-        for (WordDefinition definition : this.definitions) {
+        for (int i = 0; i < this.definitions.size(); i++) {
+            WordDefinition definition = this.definitions.get(i);
             ContextProcessor processor = new ContextProcessor(this);
 
             this.recursiveBuildContext(this.sentence, definition, processor);
@@ -83,54 +84,25 @@ public class ContextBuilder {
         return this;
     }
 
-    public double index() {
-        Map<Double, WordDefinition> defs = new TreeMap<>(Comparator.reverseOrder());
-        for (WordDefinition definition : this.definitions) {
-            ContextProcessor processor = new ContextProcessor(this);
-
-            this.recursiveBuildContext(this.sentence, definition, processor);
-            defs.put(processor.getRelevance(), definition);
-        }
-
-        this.definitions.clear();
-        this.definitions.addAll(defs.values());
-
-        if (defs.isEmpty()) {
-            return 0;
-        }
-
-        return defs.
-                keySet().
-                stream().
-                findFirst().
-                orElseThrow(RuntimeException::new);
-    }
-
     public WordDefinition getDefinition() {
         if (this.definitions.isEmpty()) {
             return new WordDefinition(this.word, NO_DEF, PartOfSpeech.UNKNOWN, false);
         }
 
-        return this.definitions.peek();
+        return this.definitions.get(0);
     }
 
     private void recursiveBuildContext(Sentence sent, WordDefinition definition, ContextProcessor processor) {
         definition.indexWith(sent, processor);
         processor.step();
 
-        if (processor.getSkip() > 0 && sent == this.sentence) {
-            this.definitions.addAll(processor.getAccepted());
-            this.skip = processor.getAccepted().get(0).getWord();
-        }
-
         Sentence def = definition.getDefinition();
         for (String w : def.getIndividualWords()) {
             for (WordDefinition d : Brain.getInstance().define(w)) {
-                if (this.recursed.contains(d)) {
+                if (!this.recursed.add(d.getWord())) {
                     continue;
                 }
 
-                this.recursed.add(d);
                 this.recursiveBuildContext(def, d, processor);
             }
         }

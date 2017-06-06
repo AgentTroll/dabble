@@ -62,10 +62,8 @@ public enum PartOfSpeech {
     @Getter private static final Map<PartOfSpeech, List<PartOfSpeech>> paradigms =
             new HashMap<>();
     static {
-        paradigms.put(NOUN, Arrays.asList(
-                NOUN, ADJECTIVE, VERB));
-        paradigms.put(ADJECTIVE, Arrays.asList(
-                ADJECTIVE));
+        paradigms.put(NOUN, Arrays.asList(NOUN, ADJECTIVE, VERB));
+        paradigms.put(ADJECTIVE, Arrays.asList(ADJECTIVE));
     }
 
     private final String dict;

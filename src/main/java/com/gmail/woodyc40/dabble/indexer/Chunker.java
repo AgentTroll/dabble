@@ -5,10 +5,11 @@ import com.gmail.woodyc40.dabble.context.ContextProcessor;
 import com.gmail.woodyc40.dabble.dictionary.PartOfSpeech;
 import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
 import com.gmail.woodyc40.dabble.parsing.Sentence;
-import com.gmail.woodyc40.dabble.util.UtilityMethods;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import java.util.List;
 
+@NotThreadSafe
 public class Chunker implements RelevanceIndexer {
     @Override
     public double index(Sentence base, WordDefinition toIndex, ContextProcessor processor, List<WordDefinition> cache, List<WordDefinition> accepted) {
@@ -17,7 +18,10 @@ public class Chunker implements RelevanceIndexer {
             if (processor.getWordIdx() < words.size() - 1) {
                 String chunk = words.get(processor.getWordIdx()) + ' ' +
                         words.get(processor.getWordIdx() + 1);
-                UtilityMethods.pl(chunk);
+                if (!processor.getParent().getRecursed().add(chunk)) {
+                    return 0;
+                }
+
                 List<WordDefinition> chunked = Brain.
                         getInstance().
                         define(chunk);

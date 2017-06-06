@@ -18,10 +18,14 @@ package com.gmail.woodyc40.dabble.parsing;
 import com.gmail.woodyc40.dabble.context.Context;
 import com.gmail.woodyc40.dabble.context.Contextual;
 import com.gmail.woodyc40.dabble.tags.PosTags;
+import com.gmail.woodyc40.dabble.tags.UserInputted;
 import lombok.Getter;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.gmail.woodyc40.dabble.util.UtilityMethods.strip;
 
@@ -50,6 +54,7 @@ public class Sentence implements Contextual {
         }
 
         this.contexts.put(PosTags.class, new PosTags(this.individualWords.size()));
+        this.contexts.put(UserInputted.class, new UserInputted());
     }
 
     @Override

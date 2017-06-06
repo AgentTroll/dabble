@@ -18,6 +18,7 @@ package com.gmail.woodyc40.dabble.context;
 import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
 import com.gmail.woodyc40.dabble.indexer.*;
 import com.gmail.woodyc40.dabble.parsing.Sentence;
+import com.gmail.woodyc40.dabble.tags.UserInputted;
 import lombok.Getter;
 
 import javax.annotation.concurrent.NotThreadSafe;
@@ -31,20 +32,24 @@ public class ContextProcessor {
             Depth.class,
             Repetition.class,
             Tendency.class,
-            Pos.class };
+            Pos.class,
+            EnvironmentIndexer.class };
 
     @Getter private double relevance;
-    @Getter private int skip;
 
     @Getter private final int wordIdx;
     @Getter private final Sentence base;
-    @Getter private final List<WordDefinition> accepted;
+    @Getter private final List<WordDefinition> cache = new ArrayList<>();
+
+    @Getter private final ContextBuilder parent;
+    private final List<WordDefinition> accepted;
     private final List<RelevanceIndexer> indexers = new ArrayList<>(INDEXERS.length);
 
     public ContextProcessor(ContextBuilder builder) {
         this.base = builder.getSentence();
         this.accepted = builder.getAccepted();
         this.wordIdx = builder.getIdx();
+        this.parent = builder;
 
         for (Class<?> c : INDEXERS) {
             try {
@@ -63,13 +68,13 @@ public class ContextProcessor {
 
     public void process(Sentence sentence, WordDefinition toIndex) {
         for (RelevanceIndexer indexer : this.indexers) {
-            List<WordDefinition> cache = new ArrayList<>();
-            double index = indexer.index(sentence, toIndex, this, cache, this.accepted);
-            if (index < 0) {
-                this.accepted.clear();
-                this.accepted.addAll(cache);
-                this.skip = 1;
-                break;
+            double index = indexer.index(sentence, toIndex, this, this.cache, this.accepted);
+            if (index < 0 && sentence.get(UserInputted.class).value()) {
+                this.parent.getDefinitions().addAll(this.cache);
+                this.parent.setSkip(this.cache.get(0).getWord());
+                this.cache.clear();
+
+                index = -index;
             }
 
             this.relevance += index;

@@ -20,6 +20,7 @@ import com.gmail.woodyc40.dabble.dictionary.OxfordDictionary;
 import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
 import com.gmail.woodyc40.dabble.parsing.Parser;
 import com.gmail.woodyc40.dabble.parsing.Sentence;
+import com.gmail.woodyc40.dabble.tags.UserInputted;
 import com.gmail.woodyc40.dabble.training.Trainer;
 
 import javax.annotation.concurrent.Immutable;
@@ -34,6 +35,7 @@ public final class Main {
     private static final String DEBUG = "-d";
 
     public static void main(String[] args) {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> System.out.println("SIGINT signal captured, terminating...")));
         List<String> ag = Arrays.asList(args);
 
         boolean doesDebugging = false;
@@ -77,7 +79,6 @@ public final class Main {
             String str = scanner.nextLine();
 
             if (doesDebugging && !str.contains(" ")) {
-                OxfordDictionary.lookup(str);
                 OxfordDictionary.lookup(str).forEach(e -> {
                     pl(e.getWord() + " => ");
                     pl('\t' + e.getPartOfSpeech().name() + " - " + e.getDefinition().getInput());
@@ -87,6 +88,8 @@ public final class Main {
             }
 
             Sentence sentence = new Sentence(str);
+            sentence.get(UserInputted.class).setValue(Boolean.TRUE);
+
             List<WordDefinition> defs = parser.parse(sentence);
 
             defs.forEach(e -> {

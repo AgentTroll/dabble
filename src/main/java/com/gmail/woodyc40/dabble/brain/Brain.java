@@ -43,6 +43,6 @@ public final class Brain {
     }
 
     public String toStatsLine() {
-        return String.format("[D: %d / M: %d]", this.memory.size(), OxfordDictionary.missed());
+        return String.format("[D: %d | M: %d]", this.memory.size(), OxfordDictionary.missed());
     }
 }
