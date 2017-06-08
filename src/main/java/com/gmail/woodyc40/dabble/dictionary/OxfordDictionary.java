@@ -79,6 +79,10 @@ public final class OxfordDictionary {
     }
 
     public static List<WordDefinition> lookup(String word) {
+        if (strip(word).isEmpty()) {
+            return Collections.emptyList();
+        }
+
         word = word.toLowerCase(); // canonical casing
         List<WordDefinition> aggregateList = new ArrayList<>(1);
 

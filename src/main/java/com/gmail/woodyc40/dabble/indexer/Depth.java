@@ -27,13 +27,11 @@ public class Depth implements RelevanceIndexer {
     private int depth = 1;
     private int count;
 
-    @Override
-    public void step() {
+    @Override public void step() {
         this.depth++;
     }
 
-    @Override
-    public double index(Sentence base, WordDefinition toIndex, ContextProcessor processor, List<WordDefinition> cache, List<WordDefinition> accepted) {
+    @Override public double index(Sentence base, WordDefinition toIndex, ContextProcessor processor, List<WordDefinition> cache, List<WordDefinition> accepted) {
         this.count++;
         return 0.001 / (this.depth * this.count);
     }

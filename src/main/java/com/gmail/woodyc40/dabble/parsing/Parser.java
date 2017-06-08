@@ -17,14 +17,17 @@ package com.gmail.woodyc40.dabble.parsing;
 
 import com.gmail.woodyc40.dabble.context.ContextBuilder;
 import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.List;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Immutable
-public class Parser {
-    public List<WordDefinition> parse(Sentence sentence) {
+public final class Parser {
+    public static List<WordDefinition> parse(Sentence sentence) {
         ContextBuilder.recurse(sentence);
 
         List<WordDefinition> accepted = new ArrayList<>();

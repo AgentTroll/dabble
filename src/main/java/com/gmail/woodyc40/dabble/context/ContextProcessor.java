@@ -69,7 +69,7 @@ public class ContextProcessor {
     public void process(Sentence sentence, WordDefinition toIndex) {
         for (RelevanceIndexer indexer : this.indexers) {
             double index = indexer.index(sentence, toIndex, this, this.cache, this.accepted);
-            if (index < 0 && sentence.get(UserInputted.class).value()) {
+            if (index < 0 && sentence.get(UserInputted.class).getValue()) {
                 this.parent.getDefinitions().addAll(this.cache);
                 this.parent.setSkip(this.cache.get(0).getWord());
                 this.cache.clear();

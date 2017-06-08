@@ -20,24 +20,22 @@ import com.gmail.woodyc40.dabble.context.ContextProcessor;
 import com.gmail.woodyc40.dabble.context.Contextual;
 import com.gmail.woodyc40.dabble.parsing.Sentence;
 import com.gmail.woodyc40.dabble.tags.TimesDefined;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.HashMap;
 import java.util.Map;
 
+@Getter
 @ToString
 @NotThreadSafe
 @EqualsAndHashCode(of = "word")
 @AllArgsConstructor
 public class WordDefinition implements Contextual {
-    @Getter private final String word;
-    @Getter private final Sentence definition;
-    @Getter private final PartOfSpeech partOfSpeech;
-    @Getter private final boolean changesPos;
+    private final String word;
+    private final Sentence definition;
+    private final PartOfSpeech partOfSpeech;
+    private final boolean changesPos;
     private final Map<Class<? extends Context<?>>, Context<?>> contexts = new HashMap<Class<? extends Context<?>>, Context<?>>() {{
         this.put(TimesDefined.class, new TimesDefined());
     }};

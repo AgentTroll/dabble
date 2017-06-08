@@ -11,8 +11,7 @@ import java.util.List;
 
 @Immutable
 public class Pos implements RelevanceIndexer {
-    @Override
-    public double index(Sentence base, WordDefinition toIndex, ContextProcessor processor, List<WordDefinition> cache, List<WordDefinition> accepted) {
+    @Override public double index(Sentence base, WordDefinition toIndex, ContextProcessor processor, List<WordDefinition> cache, List<WordDefinition> accepted) {
         if (base != processor.getBase()) {
             return 0;
         }
@@ -20,18 +19,18 @@ public class Pos implements RelevanceIndexer {
         PosTags posList = base.get(PosTags.class);
 
         if (!toIndex.isChangesPos()) {
-            posList.value().set(processor.getWordIdx(), toIndex.getPartOfSpeech());
+            posList.getValue().set(processor.getWordIdx(), toIndex.getPartOfSpeech());
             return 0.5;
         }
 
         if (!accepted.isEmpty()) {
             for (int i = 0; i < accepted.size(); i++) {
-                posList.value().set(i, accepted.get(i).getPartOfSpeech());
+                posList.getValue().set(i, accepted.get(i).getPartOfSpeech());
             }
         }
 
         if (processor.getWordIdx() > 0) {
-            PartOfSpeech speech = posList.value().get(processor.getWordIdx() - 1);
+            PartOfSpeech speech = posList.getValue().get(processor.getWordIdx() - 1);
             List<PartOfSpeech> combos = PartOfSpeech.getParadigms().get(toIndex.getPartOfSpeech());
 
             if (combos != null && combos.contains(speech)) {

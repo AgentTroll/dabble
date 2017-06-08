@@ -42,7 +42,7 @@ public final class Brain {
         return define;
     }
 
-    public String toStatsLine() {
+    public String statsLine() {
         return String.format("[D: %d | M: %d]", this.memory.size(), OxfordDictionary.missed());
     }
 }

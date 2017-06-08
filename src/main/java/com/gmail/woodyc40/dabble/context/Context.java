@@ -16,6 +16,6 @@
 package com.gmail.woodyc40.dabble.context;
 
 public interface Context<T> {
-    T value();
+    T getValue();
     void setValue(T val);
 }

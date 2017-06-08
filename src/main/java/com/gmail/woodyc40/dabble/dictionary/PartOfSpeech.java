@@ -17,11 +17,13 @@ package com.gmail.woodyc40.dabble.dictionary;
 
 import lombok.Getter;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Immutable
 public enum PartOfSpeech {
     NOUN("n."),
     ADJECTIVE("adj."),

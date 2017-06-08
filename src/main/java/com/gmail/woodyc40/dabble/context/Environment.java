@@ -18,6 +18,6 @@ public class Environment implements Contextual {
             }};
 
     @Override public <T, R extends Context<T>> R get(Class<? extends Context<T>> cls) {
-        return (R) contexts.get(cls);
+        return (R) this.contexts.get(cls);
     }
 }

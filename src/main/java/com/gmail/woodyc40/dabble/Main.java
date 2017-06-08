@@ -72,10 +72,9 @@ public final class Main {
         lf();
 
         Scanner scanner = new Scanner(System.in);
-        Parser parser = new Parser();
 
         while (true) {
-            p("Define " + Brain.getInstance().toStatsLine() + ": ");
+            p("Define " + Brain.getInstance().statsLine() + ": ");
             String str = scanner.nextLine();
 
             if (doesDebugging && !str.contains(" ")) {
@@ -90,7 +89,7 @@ public final class Main {
             Sentence sentence = new Sentence(str);
             sentence.get(UserInputted.class).setValue(Boolean.TRUE);
 
-            List<WordDefinition> defs = parser.parse(sentence);
+            List<WordDefinition> defs = Parser.parse(sentence);
 
             defs.forEach(e -> {
                 pl(e.getWord() + " => ");

@@ -15,13 +15,14 @@
  */
 package com.gmail.woodyc40.dabble.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import javax.annotation.concurrent.Immutable;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Immutable
 public final class UtilityMethods {
-    private UtilityMethods() { // Prevent instantiation
-    }
-
     public static void lf() {
         System.out.println();
     }

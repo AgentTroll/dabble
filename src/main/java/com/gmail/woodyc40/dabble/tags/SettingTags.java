@@ -2,20 +2,12 @@ package com.gmail.woodyc40.dabble.tags;
 
 import com.gmail.woodyc40.dabble.context.Context;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 @AllArgsConstructor
 public class SettingTags implements Context<String> {
-    private String value;
-
-    @Override
-    public String value() {
-        return this.value;
-    }
-
-    @Override
-    public void setValue(String val) {
-        this.value = val;
-    }
+    @Getter @Setter private String value;
 
     public static class Classroom extends SettingTags {
         public Classroom() {

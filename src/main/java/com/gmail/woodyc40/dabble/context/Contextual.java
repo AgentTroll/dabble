@@ -15,6 +15,9 @@
  */
 package com.gmail.woodyc40.dabble.context;
 
+import java.util.Map;
+
 public interface Contextual {
     <T, R extends Context<T>> R get(Class<? extends Context<T>> cls);
+    Map<Class<? extends Context<?>>, Context<?>> getContexts();
 }

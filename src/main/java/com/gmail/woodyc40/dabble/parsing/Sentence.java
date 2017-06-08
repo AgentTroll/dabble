@@ -57,8 +57,7 @@ public class Sentence implements Contextual {
         this.contexts.put(UserInputted.class, new UserInputted());
     }
 
-    @Override
-    public <T, R extends Context<T>> R get(Class<? extends Context<T>> cls) {
+    @Override public <T, R extends Context<T>> R get(Class<? extends Context<T>> cls) {
         return (R) this.contexts.get(cls);
     }
 }

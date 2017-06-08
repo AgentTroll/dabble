@@ -6,13 +6,12 @@ import com.gmail.woodyc40.dabble.dictionary.PartOfSpeech;
 import com.gmail.woodyc40.dabble.dictionary.WordDefinition;
 import com.gmail.woodyc40.dabble.parsing.Sentence;
 
-import javax.annotation.concurrent.NotThreadSafe;
+import javax.annotation.concurrent.Immutable;
 import java.util.List;
 
-@NotThreadSafe
+@Immutable
 public class Chunker implements RelevanceIndexer {
-    @Override
-    public double index(Sentence base, WordDefinition toIndex, ContextProcessor processor, List<WordDefinition> cache, List<WordDefinition> accepted) {
+    @Override public double index(Sentence base, WordDefinition toIndex, ContextProcessor processor, List<WordDefinition> cache, List<WordDefinition> accepted) {
         if (toIndex.getPartOfSpeech() == PartOfSpeech.NOUN) {
             List<String> words = base.getIndividualWords();
             if (processor.getWordIdx() < words.size() - 1) {

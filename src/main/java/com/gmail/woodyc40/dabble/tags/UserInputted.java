@@ -6,7 +6,7 @@ public class UserInputted implements Context<Boolean> {
     private boolean userInputted;
 
     @Override
-    public Boolean value() {
+    public Boolean getValue() {
         return this.userInputted;
     }
 

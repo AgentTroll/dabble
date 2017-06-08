@@ -14,18 +14,21 @@ import java.util.List;
 public class EnvironmentIndexer implements RelevanceIndexer {
     @Override
     public double index(Sentence base, WordDefinition toIndex, ContextProcessor processor, List<WordDefinition> cache, List<WordDefinition> accepted) {
+        int count = 1;
+        int reps = 1;
         for (Context<?> tag : Environment.getInstance().getContexts().values()) {
             Context<String> st = (SettingTags) tag;
-            if (st.value().toLowerCase().contains(toIndex.getWord().toLowerCase())) {
-                return 500;
+            if (st.getValue().toLowerCase().contains(toIndex.getWord().toLowerCase())) {
+                count += 5;
             }
 
             for (String word : toIndex.getDefinition().getIndividualWords()) {
-                if (word.equalsIgnoreCase(st.value())) {
-                    return 2;
+                reps++;
+                if (word.equalsIgnoreCase(st.getValue())) {
+                    count++;
                 }
             }
         }
-        return 0;
+        return count / reps;
     }
 }

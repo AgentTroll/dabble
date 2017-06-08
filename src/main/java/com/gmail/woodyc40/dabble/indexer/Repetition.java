@@ -24,8 +24,7 @@ import java.util.List;
 
 @Immutable
 public class Repetition implements RelevanceIndexer {
-    @Override
-    public double index(Sentence base, WordDefinition toIndex, ContextProcessor processor, List<WordDefinition> cache, List<WordDefinition> accepted) {
+    @Override public double index(Sentence base, WordDefinition toIndex, ContextProcessor processor, List<WordDefinition> cache, List<WordDefinition> accepted) {
         int count = 1;
         int reps = 1;
         for (String s : base.getIndividualWords()) {

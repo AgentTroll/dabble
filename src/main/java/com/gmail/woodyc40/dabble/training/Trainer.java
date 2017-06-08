@@ -17,14 +17,20 @@ package com.gmail.woodyc40.dabble.training;
 
 import com.gmail.woodyc40.dabble.parsing.Parser;
 import com.gmail.woodyc40.dabble.parsing.Sentence;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+import javax.annotation.concurrent.Immutable;
 
 import static com.gmail.woodyc40.dabble.util.UtilityMethods.p;
 import static com.gmail.woodyc40.dabble.util.UtilityMethods.pl;
 
-public class Trainer {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Immutable
+public final class Trainer {
     public static void init() {
         p("Building definition cache (this might take a while)... ");
-        new Parser().parse(new Sentence("large fly come in to eat food like apple " +
+        Parser.parse(new Sentence("large fly come in to eat food like apple " +
                 "and banana which will help them live through tough time " +
                 "by having extra energy in future"));
         pl("Done.");
