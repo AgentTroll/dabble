@@ -16,16 +16,18 @@
 package com.gmail.woodyc40.dabble.tags;
 
 import com.gmail.woodyc40.dabble.context.Context;
-import lombok.Getter;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
 @NotThreadSafe
 public class TimesDefined implements Context<Integer> {
-    @Getter private int value;
+    private int value;
 
-    @Override
-    public void setValue(Integer val) {
+    @Override public Integer getValue() {
+        return this.value;
+    }
+
+    @Override public void setValue(Integer val) {
         this.value = val;
     }
 }
